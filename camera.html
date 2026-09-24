@@ -3,205 +3,163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Camera</title>
+<title>Камера</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+  html, body { width: 100%; height: 100%; background: #000; overflow: hidden; font-family: system-ui; }
   video { width: 100%; height: 100%; object-fit: cover; }
   #status {
-    position: fixed; top: 12px; left: 12px;
-    color: #fff; font: 14px system-ui;
-    background: rgba(0,0,0,0.5); padding: 8px 12px;
-    border-radius: 8px; z-index: 10;
-    max-width: 80vw;
+    position: fixed; top: 12px; left: 12px; right: 12px;
+    color: #fff; font-size: 14px;
+    background: rgba(0,0,0,0.6); padding: 10px 14px;
+    border-radius: 10px; z-index: 10;
+    line-height: 1.4;
   }
-  #zoomInfo {
-    position: fixed; bottom: 12px; left: 50%;
-    transform: translateX(-50%);
-    color: #fff; font: 14px system-ui;
-    background: rgba(0,0,0,0.5); padding: 6px 12px;
-    border-radius: 8px; z-index: 10;
-  }
+  #status b { color: #4ade80; }
 </style>
 </head>
 <body>
 <video id="preview" autoplay muted playsinline></video>
-<div id="status">Инициализация…</div>
-<div id="zoomInfo"></div>
+<div id="status">Запуск…</div>
 
 <script src="https://unpkg.com/peerjs@1.5.0/dist/peerjs.min.js"></script>
 <script>
-// ============ НАСТРОЙКИ ============
-// ВАЖНО: замени ID на свой уникальный — иначе кто угодно сможет подключиться
-const ROOM_ID = 'cam-7f3a9b2c-my-camera';
+// ID камеры можно задать в URL: camera.html?id=my-cam-1
+// Если не задан — берётся ID по умолчанию
+const params = new URLSearchParams(location.search);
+const ROOM_ID = params.get('id') || 'cam-default-7f3a9b2c';
 
-const BASE_VIDEO_CONSTRAINTS = {
-  video: {
-    facingMode: 'environment',   // задняя камера
-    width: { ideal: 1920 },
-    height: { ideal: 1080 }
-  },
-  audio: false
-};
-// ===================================
-
-const preview   = document.getElementById('preview');
-const statusEl  = document.getElementById('status');
-const zoomInfo  = document.getElementById('zoomInfo');
+const preview = document.getElementById('preview');
+const statusEl = document.getElementById('status');
 
 let stream = null;
 let track = null;
 let peer = null;
-let controllerConn = null;   // DataConnection от пульта
-let activeCall = null;       // MediaConnection с пультом
-let zoomCapabilities = null; // { min, max, step } или null
-let usingFrontCamera = false;
+let controllerConn = null;
+let activeCall = null;
+let zoomCaps = null;
+let frontCam = false;
 
-function setStatus(text) {
-  statusEl.textContent = text;
-  console.log('[status]', text);
-}
+const setStatus = (html) => statusEl.innerHTML = html;
 
-// ---------- 1. Запуск камеры ----------
-async function startCamera(constraints = BASE_VIDEO_CONSTRAINTS) {
+async function startCamera(front = false) {
   if (stream) stream.getTracks().forEach(t => t.stop());
 
-  stream = await navigator.mediaDevices.getUserMedia(constraints);
+  stream = await navigator.mediaDevices.getUserMedia({
+    video: {
+      facingMode: front ? 'user' : 'environment',
+      width:  { ideal: 1920 },
+      height: { ideal: 1080 }
+    },
+    audio: true   // микрофон тоже — чтобы приложение могло слышать
+  });
+
   track = stream.getVideoTracks()[0];
   preview.srcObject = stream;
 
   const caps = track.getCapabilities ? track.getCapabilities() : {};
-  zoomCapabilities = caps.zoom || null;
+  zoomCaps = caps.zoom || null;
 
-  if (zoomCapabilities) {
-    zoomInfo.textContent = `Зум: ${zoomCapabilities.min}–${zoomCapabilities.max}`;
-  } else {
-    zoomInfo.textContent = 'Зум не поддерживается (iOS Safari / некоторые Android)';
-  }
-
-  console.log('Возможности камеры:', caps);
+  setStatus(
+    `✅ Камера запущена<br>` +
+    `ID: <b>${ROOM_ID}</b><br>` +
+    (zoomCaps
+      ? `Зум: ${zoomCaps.min}–${zoomCaps.max}`
+      : `Зум не поддерживается этим устройством`)
+  );
 }
 
-// ---------- 2. PeerJS: создаём комнату ----------
 function startPeer() {
   peer = new Peer(ROOM_ID, { debug: 2 });
 
   peer.on('open', (id) => {
-    setStatus('Ожидание пульта… ID: ' + id);
+    setStatus(
+      `✅ Готово. Жду подключения…<br>` +
+      `ID камеры: <b>${id}</b><br>` +
+      `Введите этот ID в приложении`
+    );
   });
 
-  peer.on('error', (err) => {
-    console.error('Peer error:', err);
-    setStatus('Ошибка Peer: ' + err.type);
+  peer.on('error', (e) => {
+    console.error(e);
+    setStatus('❌ Ошибка Peer: ' + e.type);
   });
 
-  // Пульт подключается через DataConnection — обмен командами
   peer.on('connection', (conn) => {
-    console.log('Пульт подключён (DataConnection)');
     controllerConn = conn;
-    setStatus('Пульт подключён');
-
     conn.on('data', handleCommand);
-    conn.on('close', () => {
-      setStatus('Пульт отключился');
-      controllerConn = null;
-    });
-    conn.on('error', (err) => console.error('Conn error:', err));
+    conn.on('close', () => controllerConn = null);
   });
 
-  // Пульт звонит по WebRTC — забирает видеопоток
   peer.on('call', (call) => {
-    console.log('Пульт запросил видео');
     activeCall = call;
-    call.answer(stream);
-    call.on('close', () => { activeCall = null; });
-    call.on('error', (err) => console.error('Call error:', err));
+    call.answer(stream);   // отдаём видео+аудио
+    call.on('close', () => activeCall = null);
   });
 }
 
-// ---------- 3. Обработка команд от пульта ----------
 async function handleCommand(cmd) {
-  console.log('Команда от пульта:', cmd);
   if (!cmd || typeof cmd !== 'object') return;
 
   switch (cmd.type) {
-
     case 'zoom': {
-      if (!zoomCapabilities) {
-        console.warn('Зум не поддерживается устройством');
-        return;
-      }
-      const value = Math.max(
-        zoomCapabilities.min,
-        Math.min(zoomCapabilities.max, Number(cmd.value) || 1)
-      );
+      if (!zoomCaps) return;
+      const v = Math.max(zoomCaps.min, Math.min(zoomCaps.max, Number(cmd.value) || 1));
       try {
-        await track.applyConstraints({ advanced: [{ zoom: value }] });
-        zoomInfo.textContent = `Зум: ${value.toFixed(2)}`;
-      } catch (e) {
-        console.error('Ошибка применения зума:', e);
-      }
+        await track.applyConstraints({ advanced: [{ zoom: v }] });
+      } catch (e) { console.warn(e); }
       break;
     }
 
     case 'switchCamera': {
-      usingFrontCamera = !usingFrontCamera;
-      const newConstraints = {
-        video: {
-          facingMode: usingFrontCamera ? 'user' : 'environment',
-          width: { ideal: 1920 },
-          height: { ideal: 1080 }
-        },
-        audio: false
-      };
+      frontCam = !frontCam;
+      await startCamera(frontCam);
+      if (activeCall) {
+        const sender = activeCall.peerConnection
+          .getSenders().find(s => s.track && s.track.kind === 'video');
+        if (sender) await sender.replaceTrack(track);
+      }
+      if (controllerConn?.open) {
+        controllerConn.send({ type: 'info', front: frontCam, zoom: zoomCaps });
+      }
+      break;
+    }
+
+    case 'torch': {
       try {
-        await startCamera(newConstraints);
-
-        // Подменяем видеодорожку в уже установленном звонке
-        if (activeCall) {
-          const sender = activeCall.peerConnection
-            .getSenders()
-            .find(s => s.track && s.track.kind === 'video');
-          if (sender) await sender.replaceTrack(track);
-        }
-        if (controllerConn && controllerConn.open) {
-          controllerConn.send({ type: 'cameraSwitched', front: usingFrontCamera });
-        }
-      } catch (e) {
-        console.error('Ошибка переключения камеры:', e);
-      }
+        await track.applyConstraints({ advanced: [{ torch: !!cmd.value }] });
+      } catch (e) { console.warn('Torch не поддерживается'); }
       break;
     }
 
-    case 'ping': {
-      if (controllerConn && controllerConn.open) {
-        controllerConn.send({ type: 'pong', t: Date.now() });
+    case 'info': {
+      // приложение запросило сведения о камере
+      if (controllerConn?.open) {
+        controllerConn.send({
+          type: 'info',
+          zoom: zoomCaps,
+          front: frontCam
+        });
       }
       break;
     }
-
-    default:
-      console.warn('Неизвестная команда:', cmd);
   }
 }
 
-// ---------- 4. Старт ----------
 (async function main() {
   try {
-    setStatus('Запрос доступа к камере…');
+    setStatus('Запрос доступа к камере и микрофону…');
     await startCamera();
-    setStatus('Камера запущена');
     startPeer();
   } catch (e) {
     console.error(e);
-    setStatus('Ошибка: ' + e.message);
+    setStatus('❌ ' + e.message);
   }
 })();
 
-// Останавливаем камеру при закрытии страницы
 window.addEventListener('beforeunload', () => {
-  if (stream) stream.getTracks().forEach(t => t.stop());
-  if (peer) peer.destroy();
+  stream?.getTracks().forEach(t => t.stop());
+  peer?.destroy();
 });
 </script>
 </body>
