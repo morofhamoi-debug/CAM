@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Playground</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    height: 100vh;
+    display: flex;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+  }
+
+  textarea {
+    width: 50%;
+    padding: 20px;
+    font-family: monospace;
+    font-size: 14px;
+    border: none;
+    outline: none;
+    resize: none;
+    background: #1e1e2e;
+    color: #fff;
+  }
+
+  iframe {
+    width: 50%;
+    border: none;
+    background: #fff;
+  }
+</style>
+</head>
+<body>
+
+  <textarea id="code">
+<h1>Привет!</h1>
+<p>Пиши HTML слева — он появится справа.</p>
+<button style="padding:10px 20px">Кнопка</button>
+  </textarea>
+
+  <iframe id="preview"></iframe>
+
+<script>
+  const code = document.getElementById('code');
+  const preview = document.getElementById('preview');
+
+  function update() {
+    preview.srcdoc = code.value;
+  }
+
+  code.addEventListener('input', update);
+  update();
+</script>
+
+</body>
+</html>
