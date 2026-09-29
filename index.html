@@ -13,39 +13,66 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
 
   .top {
-    padding: 15px;
-    display: flex;
-    gap: 10px;
+    padding: 12px 15px;
     background: #181825;
     border-bottom: 1px solid #313244;
   }
 
-  textarea {
-    flex: 1;
-    padding: 20px;
-    font-family: monospace;
-    font-size: 14px;
-    background: #1e1e2e;
-    color: #cdd6f4;
-    border: none;
-    outline: none;
-    resize: none;
-  }
-
-  button {
-    padding: 12px 24px;
+  button.show-btn {
+    padding: 10px 22px;
     background: #89b4fa;
     color: #1e1e2e;
     border: none;
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
+    font-size: 14px;
   }
 
-  button:hover { background: #b4befe; }
+  button.show-btn:hover { background: #b4befe; }
+
+  /* Область редактора */
+  .editor {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    background: #1e1e2e;
+  }
+
+  /* Номера строк */
+  #lines {
+    padding: 15px 10px 15px 15px;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #6c7086;
+    text-align: right;
+    user-select: none;
+    background: #181825;
+    overflow: hidden;
+    white-space: pre;
+  }
+
+  /* Сам редактор */
+  #code {
+    flex: 1;
+    padding: 15px;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    background: #1e1e2e;
+    color: #cdd6f4;
+    border: none;
+    outline: none;
+    resize: none;
+    white-space: pre;
+    overflow-x: auto;   /* прокрутка по горизонтали */
+    overflow-y: auto;   /* прокрутка по вертикали */
+  }
 
   /* Полноэкранный просмотр */
   #full {
@@ -60,6 +87,7 @@
     width: 100%;
     height: 100%;
     border: none;
+    display: block;
   }
 
   /* Маленькая кнопка выхода */
@@ -69,13 +97,13 @@
     right: 12px;
     padding: 6px 14px;
     font-size: 12px;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.4);
     color: #fff;
     border: none;
     border-radius: 20px;
     cursor: pointer;
     z-index: 1000;
-    opacity: 0.4;
+    opacity: 0.35;
     transition: opacity 0.3s;
   }
 
@@ -85,38 +113,72 @@
 <body>
 
   <div class="top">
-    <button onclick="show()">▶ Показать</button>
+    <button class="show-btn" id="showBtn">▶ Показать</button>
   </div>
 
-  <textarea id="code" placeholder="Вставь свой HTML код сюда..."><h1 style="color:#764ba2;font-family:sans-serif;text-align:center;margin-top:100px">Привет, мир!</h1>
-<p style="text-align:center;font-family:sans-serif">Замени этот код своим 👆</p></textarea>
+  <div class="editor">
+    <div id="lines">1</div>
+    <textarea id="code" spellcheck="false" wrap="off"></textarea>
+  </div>
 
   <div id="full">
     <iframe id="preview"></iframe>
-    <button id="exit" onclick="hide()">✕ Выйти</button>
+    <button id="exit">✕ Выйти</button>
   </div>
 
 <script>
-  // Сохраняем код в браузере, чтобы не потерялся
-  const code = document.getElementById('code');
-  code.value = localStorage.getItem('mycode') || code.value;
+  const codeEl = document.getElementById('code');
+  const linesEl = document.getElementById('lines');
 
-  code.addEventListener('input', () => {
-    localStorage.setItem('mycode', code.value);
+  // Стартовый код
+  const defaultCode = `<h1 style="color:#764ba2;font-family:sans-serif;text-align:center;margin-top:100px">
+  Привет, мир!
+</h1>
+<p style="text-align:center;font-family:sans-serif">
+  Замени этот код своим 👆
+</p>`;
+
+  codeEl.value = localStorage.getItem('mycode') || defaultCode;
+
+  // Обновляем номера строк
+  function updateLines() {
+    const count = codeEl.value.split('\n').length;
+    let out = '';
+    for (let i = 1; i <= count; i++) out += i + '\n';
+    linesEl.textContent = out;
+  }
+
+  // Синхронизация прокрутки номеров со строками
+  codeEl.addEventListener('scroll', () => {
+    linesEl.scrollTop = codeEl.scrollTop;
   });
 
-  function show() {
-    document.getElementById('preview').srcdoc = code.value;
-    document.getElementById('full').style.display = 'block';
+  codeEl.addEventListener('input', () => {
+    localStorage.setItem('mycode', codeEl.value);
+    updateLines();
+  });
+
+  updateLines();
+
+  // ==== Показ ====
+  const preview = document.getElementById('preview');
+  const full = document.getElementById('full');
+
+  document.getElementById('showBtn').addEventListener('click', () => {
+    // Blob-URL надёжнее, чем srcdoc — не ломается на кавычках
+    const blob = new Blob([codeEl.value], { type: 'text/html' });
+    preview.src = URL.createObjectURL(blob);
+    full.style.display = 'block';
+  });
+
+  function close() {
+    full.style.display = 'none';
+    preview.src = 'about:blank';
   }
 
-  function hide() {
-    document.getElementById('full').style.display = 'none';
-  }
-
-  // Esc тоже закрывает
+  document.getElementById('exit').addEventListener('click', close);
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') hide();
+    if (e.key === 'Escape') close();
   });
 </script>
 
