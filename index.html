@@ -2,185 +2,2156 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>HTML Playground</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GASPARD FASHION — Премиальная одежда</title>
+<meta name="description" content="GASPARD FASHION — современный интернет-магазин премиальной одежды.">
+<meta property="og:title" content="GASPARD FASHION">
+<meta property="og:description" content="Премиальная одежда">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a0a'/%3E%3Ctext x='50' y='70' font-family='Georgia,serif' font-size='64' fill='white' text-anchor='middle'%3EG%3C/text%3E%3C/svg%3E">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+/* ============ RESET & BASE ============ */
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+:root{
+  --bg:#fff; --fg:#0a0a0a; --muted:#737373; --border:#e8e8e8; --soft:#f7f7f7;
+  --danger:#c8102e; --success:#1a7f4b; --warn:#b7791f;
+  --radius:6px; --radius-lg:12px;
+  --tr:.22s cubic-bezier(.4,0,.2,1);
+  --container:1280px;
+}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;
+  color:var(--fg);background:var(--bg);font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh;
+}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit;padding:0}
+img{max-width:100%;display:block}
+input,textarea,select{font:inherit;color:inherit;outline:none}
+h1,h2,h3,h4{margin:0;font-weight:500;letter-spacing:-.01em}
+ul{list-style:none;padding:0;margin:0}
+::selection{background:#0a0a0a;color:#fff}
 
-  body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background: #1e1e2e;
-    color: #fff;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
+/* ============ LAYOUT ============ */
+.container{max-width:var(--container);margin:0 auto;padding:0 24px}
+@media(max-width:640px){.container{padding:0 16px}}
+#app{min-height:60vh;padding-bottom:80px}
 
-  .top {
-    padding: 12px 15px;
-    background: #181825;
-    border-bottom: 1px solid #313244;
-  }
+/* ============ HEADER ============ */
+#site-header{
+  position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);
+  backdrop-filter:saturate(180%) blur(12px);-webkit-backdrop-filter:saturate(180%) blur(12px);
+  border-bottom:1px solid var(--border);
+  padding-top:env(safe-area-inset-top);
+}
+.header-inner{
+  max-width:var(--container);margin:0 auto;padding:0 24px;
+  height:68px;display:flex;align-items:center;gap:24px;
+}
+@media(max-width:640px){.header-inner{padding:0 16px;height:60px}}
+.logo{
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:22px;letter-spacing:.28em;font-weight:400;white-space:nowrap;
+  transition:opacity var(--tr);
+}
+.logo:hover{opacity:.7}
+.logo span{font-size:11px;letter-spacing:.35em;color:var(--muted);margin-left:6px;vertical-align:middle}
+@media(max-width:640px){.logo{font-size:17px;letter-spacing:.22em}.logo span{font-size:9px}}
+.nav-desktop{display:flex;gap:28px;margin-left:auto;font-size:14px}
+.nav-desktop a{position:relative;padding:6px 0;transition:opacity var(--tr)}
+.nav-desktop a:hover{opacity:.6}
+.nav-desktop a::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:currentColor;transform:scaleX(0);transition:transform var(--tr)}
+.nav-desktop a:hover::after{transform:scaleX(1)}
+.header-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+.nav-desktop + .header-actions{margin-left:0}
+.icon-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:10px 12px;border-radius:999px;font-size:13px;
+  transition:background var(--tr);position:relative;min-height:44px;
+}
+.icon-btn:hover{background:var(--soft)}
+.icon-btn svg{display:block}
+.badge{
+  position:absolute;top:4px;right:4px;background:var(--fg);color:#fff;
+  font-size:10px;line-height:1;padding:3px 5px;border-radius:999px;min-width:16px;text-align:center;
+}
+.menu-btn{display:none;width:44px;height:44px;border-radius:8px;align-items:center;justify-content:center;flex-direction:column;gap:5px}
+.menu-btn span{display:block;width:22px;height:1.5px;background:var(--fg);transition:var(--tr)}
+@media(max-width:900px){
+  .nav-desktop{display:none}
+  .menu-btn{display:flex}
+}
 
-  button.show-btn {
-    padding: 10px 22px;
-    background: #89b4fa;
-    color: #1e1e2e;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 14px;
-  }
+/* Mobile drawer */
+.mobile-drawer{
+  position:fixed;inset:0;background:#fff;z-index:200;
+  transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  padding:24px;padding-top:calc(24px + env(safe-area-inset-top));
+  display:flex;flex-direction:column;
+}
+.mobile-drawer.open{transform:translateX(0)}
+.mobile-drawer .close-x{position:absolute;top:20px;right:20px;font-size:28px;width:44px;height:44px;display:grid;place-items:center}
+.mobile-drawer nav{display:flex;flex-direction:column;gap:6px;margin-top:40px}
+.mobile-drawer nav a{font-size:22px;padding:14px 0;border-bottom:1px solid var(--border);letter-spacing:.02em}
+.mobile-drawer .drawer-foot{margin-top:auto;padding-top:24px;font-size:13px;color:var(--muted)}
 
-  button.show-btn:hover { background: #b4befe; }
+/* ============ BUTTONS ============ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:12px 22px;border-radius:var(--radius);font-size:14px;font-weight:500;
+  letter-spacing:.02em;transition:all var(--tr);white-space:nowrap;
+  min-height:44px;text-align:center;border:1px solid transparent;
+}
+.btn-primary{background:var(--fg);color:#fff}
+.btn-primary:hover{background:#2b2b2b;transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(0)}
+.btn-outline{background:#fff;border-color:var(--fg)}
+.btn-outline:hover{background:var(--fg);color:#fff}
+.btn-ghost{background:transparent;color:var(--fg)}
+.btn-ghost:hover{background:var(--soft)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover{background:#a50d26}
+.btn-sm{padding:8px 14px;font-size:13px;min-height:36px}
+.btn-block{width:100%}
+.btn[disabled]{opacity:.5;cursor:not-allowed;transform:none}
 
-  /* Область редактора */
-  .editor {
-    flex: 1;
-    display: flex;
-    overflow: hidden;
-    background: #1e1e2e;
-  }
+/* ============ FORMS ============ */
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.field label{font-size:13px;color:var(--muted);font-weight:500}
+.input,textarea.input,select.input{
+  width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius);
+  background:#fff;transition:border var(--tr);min-height:44px;
+}
+.input:focus{border-color:var(--fg)}
+textarea.input{resize:vertical;min-height:90px;font-family:inherit}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.row2{grid-template-columns:1fr}}
 
-  /* Номера строк */
-  #lines {
-    padding: 15px 10px 15px 15px;
-    font-family: monospace;
-    font-size: 14px;
-    line-height: 1.5;
-    color: #6c7086;
-    text-align: right;
-    user-select: none;
-    background: #181825;
-    overflow: hidden;
-    white-space: pre;
-  }
+/* ============ HERO ============ */
+.hero{
+  padding:100px 0 80px;text-align:center;
+  border-bottom:1px solid var(--border);background:
+    radial-gradient(ellipse at top,rgba(0,0,0,.025),transparent 60%);
+}
+.hero h1{
+  font-family:Georgia,'Times New Roman',serif;font-weight:400;
+  font-size:clamp(34px,6vw,72px);letter-spacing:.01em;line-height:1.05;margin-bottom:20px;
+}
+.hero p{color:var(--muted);font-size:clamp(14px,1.6vw,17px);max-width:560px;margin:0 auto 32px}
+.hero .btn{padding:14px 34px}
+@media(max-width:640px){.hero{padding:60px 0 50px}}
 
-  /* Сам редактор */
-  #code {
-    flex: 1;
-    padding: 15px;
-    font-family: monospace;
-    font-size: 14px;
-    line-height: 1.5;
-    background: #1e1e2e;
-    color: #cdd6f4;
-    border: none;
-    outline: none;
-    resize: none;
-    white-space: pre;
-    overflow-x: auto;   /* прокрутка по горизонтали */
-    overflow-y: auto;   /* прокрутка по вертикали */
-  }
+/* ============ SECTIONS ============ */
+.section{padding:64px 0}
+.section-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:32px;gap:16px;flex-wrap:wrap}
+.section-head h2{font-family:Georgia,serif;font-weight:400;font-size:clamp(22px,3vw,34px)}
+.section-head p{color:var(--muted);font-size:14px;margin:4px 0 0}
+@media(max-width:640px){.section{padding:40px 0}}
 
-  /* Полноэкранный просмотр */
-  #full {
-    position: fixed;
-    inset: 0;
-    background: #fff;
-    display: none;
-    z-index: 999;
-  }
+/* ============ PRODUCT GRID ============ */
+.grid{
+  display:grid;gap:24px 16px;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+}
+@media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr);gap:20px 12px}}
+.pcard{cursor:pointer;transition:transform var(--tr);position:relative;display:block}
+.pcard:hover{transform:translateY(-3px)}
+.pcard .img-wrap{
+  aspect-ratio:3/4;background:var(--soft);border-radius:var(--radius);
+  overflow:hidden;position:relative;margin-bottom:12px;
+}
+.pcard .img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.pcard:hover .img-wrap img{transform:scale(1.03)}
+.pcard .no-img{width:100%;height:100%;display:grid;place-items:center;color:#c8c8c8;font-size:12px;letter-spacing:.15em}
+.pcard .tags{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:6px;z-index:2}
+.tag{font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:4px 8px;border-radius:2px;font-weight:600}
+.tag-new{background:#0a0a0a;color:#fff}
+.tag-sale{background:var(--danger);color:#fff}
+.fav-btn{
+  position:absolute;top:8px;right:8px;width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(6px);
+  display:grid;place-items:center;z-index:2;transition:transform var(--tr);
+}
+.fav-btn:hover{transform:scale(1.08)}
+.fav-btn svg{width:18px;height:18px}
+.fav-btn.active svg{fill:var(--danger);stroke:var(--danger)}
+.pcard h3{font-size:14px;font-weight:500;margin-bottom:4px}
+.pcard .price{font-size:14px;display:flex;gap:10px;align-items:baseline}
+.pcard .price .old{color:var(--muted);text-decoration:line-through;font-size:13px}
+.pcard .oos{font-size:12px;color:var(--muted);margin-top:4px}
 
-  #full iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-    display: block;
-  }
+/* ============ EMPTY STATE ============ */
+.empty{
+  padding:80px 24px;text-align:center;border:1px dashed var(--border);
+  border-radius:var(--radius-lg);background:var(--soft);
+}
+.empty .icon{font-size:40px;opacity:.35;margin-bottom:16px}
+.empty h3{font-family:Georgia,serif;font-weight:400;font-size:22px;margin-bottom:8px}
+.empty p{color:var(--muted);margin-bottom:24px;max-width:400px;margin-left:auto;margin-right:auto}
+.empty .btn{margin-top:8px}
+@media(max-width:640px){.empty{padding:56px 20px}}
 
-  /* Маленькая кнопка выхода */
-  #exit {
-    position: fixed;
-    top: 12px;
-    right: 12px;
-    padding: 6px 14px;
-    font-size: 12px;
-    background: rgba(0, 0, 0, 0.4);
-    color: #fff;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    z-index: 1000;
-    opacity: 0.35;
-    transition: opacity 0.3s;
-  }
+/* ============ CATALOG ============ */
+.catalog-wrap{display:grid;grid-template-columns:260px 1fr;gap:40px;padding:32px 0}
+@media(max-width:900px){.catalog-wrap{grid-template-columns:1fr;gap:20px}}
+.filters{position:sticky;top:88px;align-self:start;max-height:calc(100vh - 100px);overflow-y:auto}
+@media(max-width:900px){.filters{position:static;max-height:none;display:none}.filters.open{display:block}}
+.filters-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.filters-head h3{font-size:15px}
+.filter-group{padding:16px 0;border-bottom:1px solid var(--border)}
+.filter-group h4{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.filter-list{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  padding:7px 13px;border:1px solid var(--border);border-radius:999px;
+  font-size:13px;transition:all var(--tr);cursor:pointer;background:#fff;
+}
+.chip:hover{border-color:var(--fg)}
+.chip.active{background:var(--fg);color:#fff;border-color:var(--fg)}
+.chip.sw{width:34px;height:34px;padding:0;border-radius:50%;position:relative;overflow:hidden}
+.chip.sw.active{outline:2px solid var(--fg);outline-offset:2px;border-color:transparent}
+.price-row{display:flex;gap:10px;align-items:center}
+.price-row .input{padding:8px 10px;min-height:38px}
+.catalog-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.catalog-bar .count{color:var(--muted);font-size:13px}
+.filters-toggle{display:none}
+@media(max-width:900px){.filters-toggle{display:inline-flex}}
+.search-bar{position:relative;margin-bottom:4px}
+.search-bar .input{padding-left:42px}
+.search-bar svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
 
-  #exit:hover { opacity: 1; }
+/* ============ PRODUCT PAGE ============ */
+.pdp{padding:32px 0}
+.pdp-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:56px;align-items:start}
+@media(max-width:900px){.pdp-grid{grid-template-columns:1fr;gap:24px}}
+.gallery{display:flex;flex-direction:column;gap:12px}
+.gallery .main{aspect-ratio:3/4;background:var(--soft);border-radius:var(--radius-lg);overflow:hidden;position:relative}
+.gallery .main img{width:100%;height:100%;object-fit:cover}
+.gallery .thumbs{display:flex;gap:10px;flex-wrap:wrap}
+.gallery .thumbs img{width:70px;height:88px;object-fit:cover;border-radius:var(--radius);cursor:pointer;opacity:.55;transition:opacity var(--tr);border:1px solid transparent}
+.gallery .thumbs img.active,.gallery .thumbs img:hover{opacity:1;border-color:var(--fg)}
+.pdp-info h1{font-family:Georgia,serif;font-weight:400;font-size:clamp(24px,3vw,34px);margin-bottom:12px;line-height:1.2}
+.pdp-info .price{font-size:22px;display:flex;gap:14px;align-items:baseline;margin-bottom:20px}
+.pdp-info .price .old{color:var(--muted);text-decoration:line-through;font-size:17px}
+.pdp-info .desc{color:#3a3a3a;margin-bottom:28px;font-size:14.5px;line-height:1.7;white-space:pre-wrap}
+.opt-group{margin-bottom:22px}
+.opt-group .lbl{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;justify-content:space-between}
+.opt-group .opts{display:flex;flex-wrap:wrap;gap:8px}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;height:44px}
+.qty button{width:44px;height:100%;font-size:18px;transition:background var(--tr)}
+.qty button:hover{background:var(--soft)}
+.qty span{width:44px;text-align:center;font-size:14px}
+.pdp-actions{display:flex;gap:12px;margin-top:12px}
+.pdp-actions .btn-primary{flex:1}
+.pdp-meta{margin-top:32px;padding-top:24px;border-top:1px solid var(--border);font-size:13px;color:var(--muted);display:grid;gap:6px}
+
+/* ============ CART ============ */
+.cart-grid{display:grid;grid-template-columns:1fr 340px;gap:40px;padding:32px 0;align-items:start}
+@media(max-width:900px){.cart-grid{grid-template-columns:1fr;gap:20px}}
+.cart-item{
+  display:grid;grid-template-columns:100px 1fr auto;gap:16px;
+  padding:16px 0;border-bottom:1px solid var(--border);align-items:start;
+}
+.cart-item .img{aspect-ratio:3/4;background:var(--soft);border-radius:var(--radius);overflow:hidden}
+.cart-item .img img{width:100%;height:100%;object-fit:cover}
+.cart-item h4{font-size:15px;font-weight:500;margin-bottom:6px}
+.cart-item .meta{font-size:13px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.cart-item .price{font-size:15px;font-weight:500}
+.cart-item .controls{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.link-danger{color:var(--danger);font-size:13px;transition:opacity var(--tr)}
+.link-danger:hover{opacity:.7}
+.summary{background:var(--soft);padding:24px;border-radius:var(--radius-lg);position:sticky;top:88px}
+.summary h3{font-size:15px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;font-weight:600}
+.summary-row{display:flex;justify-content:space-between;padding:8px 0;font-size:14px}
+.summary-total{display:flex;justify-content:space-between;padding-top:14px;border-top:1px solid var(--border);margin-top:14px;font-size:18px;font-weight:600}
+.summary .btn{margin-top:20px}
+
+/* ============ AUTH / ACCOUNT ============ */
+.auth-wrap{max-width:420px;margin:0 auto;padding:64px 24px}
+.auth-wrap h1{font-family:Georgia,serif;font-weight:400;font-size:30px;text-align:center;margin-bottom:8px}
+.auth-wrap .sub{text-align:center;color:var(--muted);font-size:14px;margin-bottom:32px}
+.auth-wrap .btn-primary{margin-top:8px}
+.auth-wrap .switch{text-align:center;margin-top:20px;font-size:14px;color:var(--muted)}
+.auth-wrap .switch a{color:var(--fg);border-bottom:1px solid currentColor}
+.account-grid{display:grid;grid-template-columns:240px 1fr;gap:40px;padding:32px 0}
+@media(max-width:800px){.account-grid{grid-template-columns:1fr;gap:20px}}
+.acc-nav{display:flex;flex-direction:column;gap:4px;position:sticky;top:88px;align-self:start}
+.acc-nav button{text-align:left;padding:11px 16px;border-radius:var(--radius);font-size:14px;transition:background var(--tr)}
+.acc-nav button.active{background:var(--fg);color:#fff}
+.acc-nav button:hover:not(.active){background:var(--soft)}
+.order-card{border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;transition:border var(--tr)}
+.order-card:hover{border-color:#c8c8c8}
+.order-head{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.order-head .id{font-size:13px;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
+.order-head .total{font-size:16px;font-weight:600}
+.order-items{display:flex;flex-direction:column;gap:10px}
+.order-item{display:flex;justify-content:space-between;font-size:13.5px;gap:16px}
+.order-item .name{flex:1}
+
+/* ============ STATUS BADGES ============ */
+.status{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font-size:12px;font-weight:500}
+.status-new{background:#fff4d6;color:#8a6d1a}
+.status-accepted{background:#e0efff;color:#1a4d8a}
+.status-assembling{background:#f0e8ff;color:#5a3a99}
+.status-shipping{background:#d9f0ff;color:#1a5a8a}
+.status-delivered{background:#d9f0dd;color:#1a7f4b}
+.status-cancelled{background:#ffd9de;color:#a50d26}
+
+/* ============ ADMIN ============ */
+.admin-wrap{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 68px)}
+@media(max-width:900px){.admin-wrap{grid-template-columns:1fr}}
+.admin-side{
+  background:#0a0a0a;color:#eaeaea;padding:28px 16px;
+  display:flex;flex-direction:column;gap:4px;position:sticky;top:68px;height:calc(100vh - 68px);
+}
+@media(max-width:900px){.admin-side{position:static;height:auto;padding:16px}}
+.admin-side .brand{font-family:Georgia,serif;font-size:19px;letter-spacing:.28em;padding:8px 12px 24px}
+.admin-side a{padding:11px 14px;border-radius:var(--radius);font-size:14px;color:#bdbdbd;transition:all var(--tr)}
+.admin-side a:hover{background:#1a1a1a;color:#fff}
+.admin-side a.active{background:#fff;color:#0a0a0a;font-weight:500}
+.admin-side .bottom{margin-top:auto;padding-top:16px;border-top:1px solid #222}
+.admin-side .bottom a{color:#8a8a8a;font-size:13px}
+.admin-content{padding:32px;background:#fafafa;min-height:calc(100vh - 68px)}
+@media(max-width:900px){.admin-content{padding:20px 16px}}
+.admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;gap:16px;flex-wrap:wrap}
+.admin-header h1{font-family:Georgia,serif;font-weight:400;font-size:28px}
+.admin-header p{color:var(--muted);font-size:14px;margin-top:4px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:32px}
+.stat{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
+.stat .label{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.stat .value{font-family:Georgia,serif;font-weight:400;font-size:30px;line-height:1}
+.stat .sub{font-size:12px;color:var(--muted);margin-top:6px}
+.panel{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.panel-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.panel-head h3{font-size:15px;font-weight:500}
+.table-wrap{overflow-x:auto}
+table.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+table.tbl th{text-align:left;padding:12px 16px;font-weight:500;color:var(--muted);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;background:#fbfbfb}
+table.tbl td{padding:14px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
+table.tbl tr:last-child td{border-bottom:0}
+table.tbl tr:hover td{background:#fafafa}
+.tbl-img{width:42px;height:52px;object-fit:cover;border-radius:4px;background:var(--soft)}
+.tbl-actions{display:flex;gap:6px;white-space:nowrap}
+.icon-act{width:32px;height:32px;display:grid;place-items:center;border-radius:6px;transition:background var(--tr);color:var(--muted)}
+.icon-act:hover{background:var(--soft);color:var(--fg)}
+.icon-act.danger:hover{background:#ffe9ec;color:var(--danger)}
+.status-select{padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;background:#fff;cursor:pointer}
+@media(max-width:640px){table.tbl th,table.tbl td{padding:10px 12px;font-size:12.5px}}
+.admin-subnav{display:flex;gap:6px;overflow-x:auto;padding-bottom:12px;margin-bottom:16px}
+@media(min-width:901px){.admin-subnav{display:none}}
+
+/* ============ MODAL ============ */
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(10,10,10,.5);z-index:300;
+  display:grid;place-items:center;padding:20px;animation:fade .2s ease;
+  overflow-y:auto;
+}
+.modal{
+  background:#fff;border-radius:var(--radius-lg);max-width:560px;width:100%;
+  max-height:90vh;display:flex;flex-direction:column;overflow:hidden;
+  animation:pop .25s cubic-bezier(.34,1.56,.64,1);
+}
+.modal.wide{max-width:760px}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-head h3{font-size:17px;font-weight:500}
+.modal-x{width:36px;height:36px;display:grid;place-items:center;font-size:24px;border-radius:50%;transition:background var(--tr)}
+.modal-x:hover{background:var(--soft)}
+.modal-body{padding:24px;overflow-y:auto}
+.modal-actions{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+
+/* ============ TOAST ============ */
+#toast-wrap{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column;gap:10px;pointer-events:none;max-width:90vw}
+@media(max-width:640px){#toast-wrap{bottom:calc(16px + env(safe-area-inset-bottom))}}
+.toast{
+  background:#0a0a0a;color:#fff;padding:12px 20px;border-radius:999px;
+  font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.2);
+  opacity:0;transform:translateY(20px);transition:all .3s cubic-bezier(.4,0,.2,1);
+  text-align:center;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;
+}
+.toast.in{opacity:1;transform:translateY(0)}
+.toast-error{background:var(--danger)}
+.toast-success{background:var(--success)}
+.toast-warn{background:var(--warn)}
+
+/* ============ MISC ============ */
+.loader{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--fg);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.divider{height:1px;background:var(--border);margin:24px 0}
+.muted{color:var(--muted)}
+.center{text-align:center}
+.mt-16{margin-top:16px}
+.mt-24{margin-top:24px}
+.fade-in{animation:fade .3s ease}
 </style>
 </head>
 <body>
 
-  <div class="top">
-    <button class="show-btn" id="showBtn">▶ Показать</button>
-  </div>
-
-  <div class="editor">
-    <div id="lines">1</div>
-    <textarea id="code" spellcheck="false" wrap="off"></textarea>
-  </div>
-
-  <div id="full">
-    <iframe id="preview"></iframe>
-    <button id="exit">✕ Выйти</button>
-  </div>
+<header id="site-header"></header>
+<main id="app"></main>
+<div id="toast-wrap"></div>
+<div id="modal-root"></div>
 
 <script>
-  const codeEl = document.getElementById('code');
-  const linesEl = document.getElementById('lines');
+/* =========================================================
+   GASPARD FASHION — single-file store
+   ========================================================= */
 
-  // Стартовый код
-  const defaultCode = `<h1 style="color:#764ba2;font-family:sans-serif;text-align:center;margin-top:100px">
-  Привет, мир!
-</h1>
-<p style="text-align:center;font-family:sans-serif">
-  Замени этот код своим 👆
-</p>`;
+/* ---------- utils ---------- */
+const $  = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = n => new Intl.NumberFormat('ru-RU').format(Math.round(Number(n)||0)) + ' ₽';
+const now = () => new Date().toISOString();
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+const dateRu = iso => { try { return new Date(iso).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); } catch { return iso; } };
+const delay = ms => new Promise(r=>setTimeout(r,ms));
 
-  codeEl.value = localStorage.getItem('mycode') || defaultCode;
+/* ---------- storage ---------- */
+const K = {
+  users:'gf:users', products:'gf:products', categories:'gf:categories',
+  cart:'gf:cart', favs:'gf:favs', orders:'gf:orders', session:'gf:session'
+};
+const Store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) {
+    try { localStorage.setItem(k, JSON.stringify(v)); }
+    catch (e) { throw new Error('Хранилище переполнено. Уменьшите размер фотографий.'); }
+  },
+  del(k) { localStorage.removeItem(k); }
+};
+const getUsers      = () => Store.get(K.users, []);
+const setUsers      = v => Store.set(K.users, v);
+const getProducts   = () => Store.get(K.products, []);
+const setProducts   = v => Store.set(K.products, v);
+const getCategories = () => Store.get(K.categories, []);
+const setCategories = v => Store.set(K.categories, v);
+const getOrders     = () => Store.get(K.orders, []);
+const setOrders     = v => Store.set(K.orders, v);
+const getCartMap    = () => Store.get(K.cart, {});
+const setCartMap    = v => Store.set(K.cart, v);
+const getFavsMap    = () => Store.get(K.favs, {});
+const setFavsMap    = v => Store.set(K.favs, v);
 
-  // Обновляем номера строк
-  function updateLines() {
-    const count = codeEl.value.split('\n').length;
-    let out = '';
-    for (let i = 1; i <= count; i++) out += i + '\n';
-    linesEl.textContent = out;
+/* ---------- crypto ---------- */
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function randHex(n) {
+  const a = new Uint8Array(n); crypto.getRandomValues(a);
+  return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+const hashPw = (pw, salt) => sha256(salt + '::' + pw + '::gaspard-fashion');
+
+/* ---------- auth ---------- */
+const Auth = {
+  current() {
+    const s = Store.get(K.session, null);
+    if (!s) return null;
+    return getUsers().find(u => u.id === s.userId) || null;
+  },
+  isAdmin() { const u = this.current(); return !!u && u.role === 'admin'; },
+  hasAdmin() { return getUsers().some(u => u.role === 'admin'); },
+
+  async register({name, email, password}) {
+    name = String(name||'').trim();
+    email = String(email||'').trim().toLowerCase();
+    if (name.length < 2) throw new Error('Укажите имя (минимум 2 символа)');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Некорректный email');
+    if (String(password||'').length < 6) throw new Error('Пароль должен быть минимум 6 символов');
+    const users = getUsers();
+    if (users.some(u => u.email === email)) throw new Error('Пользователь с таким email уже существует');
+    const salt = randHex(16);
+    const passwordHash = await hashPw(password, salt);
+    const user = { id: uid(), name, email, passwordHash, salt, role:'user', createdAt: now() };
+    users.push(user); setUsers(users);
+    Store.set(K.session, { userId: user.id });
+    return user;
+  },
+
+  async login(email, password) {
+    email = String(email||'').trim().toLowerCase();
+    const u = getUsers().find(x => x.email === email);
+    if (!u) throw new Error('Неверный email или пароль');
+    const h = await hashPw(password, u.salt);
+    if (h !== u.passwordHash) throw new Error('Неверный email или пароль');
+    Store.set(K.session, { userId: u.id });
+    return u;
+  },
+
+  logout() { Store.del(K.session); },
+
+  async createAdmin({name, email, password}) {
+    if (this.hasAdmin()) throw new Error('Администратор уже существует');
+    name = String(name||'').trim();
+    email = String(email||'').trim().toLowerCase();
+    if (name.length < 2) throw new Error('Укажите имя');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Некорректный email');
+    if (String(password||'').length < 8) throw new Error('Пароль администратора — минимум 8 символов');
+    const salt = randHex(16);
+    const passwordHash = await hashPw(password, salt);
+    const user = { id: uid(), name, email, passwordHash, salt, role:'admin', createdAt: now() };
+    const users = getUsers(); users.push(user); setUsers(users);
+    Store.set(K.session, { userId: user.id });
+    return user;
+  }
+};
+
+/* ---------- products ---------- */
+const Products = {
+  all() { return getProducts(); },
+  find(id) { return getProducts().find(p => p.id === id); },
+  save(data) {
+    const list = getProducts();
+    if (data.id) {
+      const i = list.findIndex(p => p.id === data.id);
+      if (i === -1) throw new Error('Товар не найден');
+      list[i] = { ...list[i], ...data, updatedAt: now() };
+    } else {
+      data.id = uid();
+      data.createdAt = now();
+      data.updatedAt = now();
+      list.unshift(data);
+    }
+    setProducts(list);
+    return data;
+  },
+  remove(id) {
+    setProducts(getProducts().filter(p => p.id !== id));
+    const carts = getCartMap();
+    for (const k in carts) carts[k] = carts[k].filter(i => i.productId !== id);
+    setCartMap(carts);
+    const favs = getFavsMap();
+    for (const k in favs) favs[k] = favs[k].filter(pid => pid !== id);
+    setFavsMap(favs);
+  }
+};
+
+/* ---------- categories ---------- */
+const Categories = {
+  all() { return getCategories(); },
+  find(id) { return getCategories().find(c => c.id === id); },
+  save(name) {
+    name = String(name||'').trim();
+    if (!name) throw new Error('Укажите название категории');
+    const list = getCategories();
+    if (list.some(c => c.name.toLowerCase() === name.toLowerCase())) throw new Error('Категория уже существует');
+    const cat = { id: uid(), name, createdAt: now() };
+    list.push(cat); setCategories(list);
+    return cat;
+  },
+  remove(id) {
+    setCategories(getCategories().filter(c => c.id !== id));
+    const products = getProducts().map(p => p.categoryId === id ? { ...p, categoryId: null } : p);
+    setProducts(products);
+  }
+};
+
+/* ---------- cart ---------- */
+const Cart = {
+  forUser(uid_) { return getCartMap()[uid_] || []; },
+  add(uid_, productId, size, color, qty=1) {
+    const m = getCartMap(); const items = m[uid_] || [];
+    const ex = items.find(i => i.productId===productId && i.size===size && i.color===color);
+    if (ex) ex.quantity += qty; else items.push({ productId, size, color, quantity: qty });
+    m[uid_] = items; setCartMap(m);
+  },
+  updateQty(uid_, productId, size, color, qty) {
+    const m = getCartMap(); const items = m[uid_] || [];
+    const it = items.find(i => i.productId===productId && i.size===size && i.color===color);
+    if (it) it.quantity = Math.max(0, qty);
+    m[uid_] = items.filter(i => i.quantity > 0);
+    setCartMap(m);
+  },
+  remove(uid_, productId, size, color) {
+    const m = getCartMap();
+    m[uid_] = (m[uid_] || []).filter(i => !(i.productId===productId && i.size===size && i.color===color));
+    setCartMap(m);
+  },
+  clear(uid_) { const m = getCartMap(); m[uid_] = []; setCartMap(m); },
+  count(uid_) { return this.forUser(uid_).reduce((s,i)=>s+i.quantity,0); }
+};
+
+/* ---------- favorites ---------- */
+const Favs = {
+  forUser(uid_) { return getFavsMap()[uid_] || []; },
+  has(uid_, pid) { return this.forUser(uid_).includes(pid); },
+  toggle(uid_, pid) {
+    const m = getFavsMap(); const list = m[uid_] || [];
+    const i = list.indexOf(pid);
+    if (i === -1) list.push(pid); else list.splice(i, 1);
+    m[uid_] = list; setFavsMap(m);
+    return i === -1;
+  }
+};
+
+/* ---------- orders ---------- */
+const ORDER_STATUSES = [
+  { key:'new',        label:'Новый' },
+  { key:'accepted',   label:'Принят' },
+  { key:'assembling', label:'Собирается' },
+  { key:'shipping',   label:'Передан в доставку' },
+  { key:'delivered',  label:'Доставлен' },
+  { key:'cancelled',  label:'Отменён' }
+];
+const statusLabel = k => (ORDER_STATUSES.find(s=>s.key===k)||{label:k}).label;
+
+const Orders = {
+  all() { return getOrders(); },
+  forUser(uid_) { return getOrders().filter(o => o.userId === uid_); },
+  find(id) { return getOrders().find(o => o.id === id); },
+  create({ userId, items, customer }) {
+    if (!items.length) throw new Error('Корзина пуста');
+    const products = getProducts();
+    const orderItems = [];
+    let total = 0;
+    const snapshot = products.map(p => ({ ...p, variants: p.variants.map(v => ({...v})) }));
+
+    for (const it of items) {
+      const p = snapshot.find(x => x.id === it.productId);
+      if (!p) throw new Error('Товар не найден');
+      const v = p.variants.find(v => v.size===it.size && v.color===it.color);
+      if (!v) throw new Error(`Вариант недоступен: ${p.name}`);
+      if (v.stock < it.quantity) throw new Error(`Недостаточно товара на складе: ${p.name}`);
+      v.stock -= it.quantity;
+      orderItems.push({
+        productId: p.id, productName: p.name,
+        size: it.size, color: it.color,
+        price: p.price, quantity: it.quantity,
+        imageUrl: (p.images && p.images[0]) || ''
+      });
+      total += p.price * it.quantity;
+    }
+    setProducts(snapshot);
+
+    const order = {
+      id: uid(), userId, status:'new', total,
+      customer: {
+        name: String(customer.name||'').trim(),
+        email: String(customer.email||'').trim(),
+        phone: String(customer.phone||'').trim(),
+        address: String(customer.address||'').trim(),
+        comment: String(customer.comment||'').trim()
+      },
+      items: orderItems,
+      createdAt: now(), updatedAt: now()
+    };
+    const all = getOrders(); all.unshift(order); setOrders(all);
+    Cart.clear(userId);
+    return order;
+  },
+  updateStatus(id, status) {
+    const all = getOrders(); const o = all.find(x => x.id === id);
+    if (!o) throw new Error('Заказ не найден');
+    if (o.status === 'cancelled' && status !== 'cancelled') throw new Error('Нельзя изменить отменённый заказ');
+    if (status === 'cancelled' && o.status !== 'cancelled') {
+      const products = getProducts();
+      for (const it of o.items) {
+        const p = products.find(x => x.id === it.productId); if (!p) continue;
+        const v = p.variants.find(v => v.size===it.size && v.color===it.color);
+        if (v) v.stock += it.quantity;
+      }
+      setProducts(products);
+    }
+    o.status = status; o.updatedAt = now(); setOrders(all);
+  }
+};
+
+/* ---------- users ---------- */
+const Users = {
+  all() { return getUsers(); },
+  find(id) { return getUsers().find(u => u.id === id); },
+  update(id, patch) {
+    const list = getUsers(); const u = list.find(x => x.id === id);
+    if (!u) throw new Error('Пользователь не найден');
+    Object.assign(u, patch); setUsers(list);
+  },
+  remove(id, actorId) {
+    if (id === actorId) throw new Error('Нельзя удалить самого себя');
+    const u = Users.find(id);
+    if (u && u.role === 'admin' && getUsers().filter(x=>x.role==='admin').length === 1)
+      throw new Error('Нельзя удалить последнего администратора');
+    setUsers(getUsers().filter(x => x.id !== id));
+  }
+};
+
+/* ---------- UI: toast ---------- */
+function toast(msg, type='success') {
+  const wrap = $('#toast-wrap');
+  const el = document.createElement('div');
+  el.className = 'toast toast-' + type;
+  el.textContent = msg;
+  wrap.appendChild(el);
+  requestAnimationFrame(() => el.classList.add('in'));
+  setTimeout(() => {
+    el.classList.remove('in');
+    setTimeout(() => el.remove(), 300);
+  }, 3000);
+}
+
+/* ---------- UI: modal ---------- */
+function openModal({ title, body, actions=[], wide=false, onMount }) {
+  const root = $('#modal-root');
+  root.innerHTML = `
+    <div class="modal-backdrop">
+      <div class="modal ${wide?'wide':''}">
+        <div class="modal-head">
+          <h3>${esc(title)}</h3>
+          <button class="modal-x" data-close type="button">×</button>
+        </div>
+        <div class="modal-body">${body}</div>
+        ${actions.length ? `<div class="modal-actions">${actions.map((a,i)=>`<button type="button" class="btn ${a.variant||'btn-ghost'}" data-act="${i}">${esc(a.label)}</button>`).join('')}</div>` : ''}
+      </div>
+    </div>`;
+  const close = () => { root.innerHTML=''; };
+  const backdrop = root.querySelector('.modal-backdrop');
+  root.querySelector('[data-close]').onclick = close;
+  backdrop.addEventListener('click', e => { if (e.target === backdrop) close(); });
+  $$('[data-act]', root).forEach(btn => btn.onclick = async () => {
+    const i = +btn.dataset.act; const a = actions[i];
+    if (a.onClick) {
+      try {
+        btn.disabled = true;
+        const r = await a.onClick();
+        if (r !== false) close();
+      } catch(e) { toast(e.message||'Ошибка', 'error'); }
+      finally { btn.disabled = false; }
+    } else close();
+  });
+  if (onMount) onMount(root, close);
+  return { close };
+}
+function confirmDialog(title, message, { danger=true, confirmLabel='Удалить' } = {}) {
+  return new Promise(resolve => {
+    openModal({
+      title,
+      body: `<p style="margin:0">${esc(message)}</p>`,
+      actions: [
+        { label:'Отмена', variant:'btn-ghost', onClick:()=>{resolve(false);return true;} },
+        { label: confirmLabel, variant: danger ? 'btn-danger' : 'btn-primary', onClick:()=>{resolve(true);return true;} }
+      ]
+    });
+  });
+}
+
+/* ---------- image helpers ---------- */
+function resizeImage(file, maxW=900, quality=0.82) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxW / img.width);
+        const w = Math.round(img.width*scale), h = Math.round(img.height*scale);
+        const c = document.createElement('canvas'); c.width=w; c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(c.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ---------- header ---------- */
+const ICONS = {
+  heart: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
+  bag: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`,
+  user: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+  search: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>`,
+  edit: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>`,
+  trash: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6 18 20a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>`,
+};
+
+function renderHeader() {
+  const user = Auth.current();
+  const cartCount = user ? Cart.count(user.id) : 0;
+  const favCount = user ? Favs.forUser(user.id).length : 0;
+  const cart = user ? Cart.forUser(user.id) : [];
+  const favs = user ? Favs.forUser(user.id) : [];
+  const header = $('#site-header');
+  header.innerHTML = `
+    <div class="header-inner">
+      <button class="menu-btn" id="open-menu" aria-label="Меню">
+        <span></span><span></span><span></span>
+      </button>
+      <a href="#/" class="logo">GASPARD<span>FASHION</span></a>
+      <nav class="nav-desktop">
+        <a href="#/">Главная</a>
+        <a href="#/catalog">Каталог</a>
+        <a href="#/catalog?new=1">Новинки</a>
+        <a href="#/about">О нас</a>
+      </nav>
+      <div class="header-actions">
+        <a href="#/favorites" class="icon-btn" aria-label="Избранное" title="Избранное">
+          ${ICONS.heart}${favCount?`<span class="badge">${favCount}</span>`:''}
+        </a>
+        <a href="#/cart" class="icon-btn" aria-label="Корзина" title="Корзина">
+          ${ICONS.bag}${cartCount?`<span class="badge">${cartCount}</span>`:''}
+        </a>
+        <a href="${user?'#/account':'#/login'}" class="icon-btn" aria-label="Аккаунт" title="Аккаунт">
+          ${ICONS.user}
+          <span style="display:none">${user?esc(user.name.split(' ')[0]):'Войти'}</span>
+        </a>
+      </div>
+    </div>`;
+  $('#open-menu').onclick = openDrawer;
+}
+
+function openDrawer() {
+  const user = Auth.current();
+  const wrap = document.createElement('div');
+  wrap.className = 'mobile-drawer';
+  wrap.innerHTML = `
+    <button class="close-x" aria-label="Закрыть">×</button>
+    <a href="#/" class="logo">GASPARD<span>FASHION</span></a>
+    <nav>
+      <a href="#/">Главная</a>
+      <a href="#/catalog">Каталог</a>
+      <a href="#/catalog?new=1">Новинки</a>
+      <a href="#/about">О нас</a>
+      <a href="#/favorites">Избранное</a>
+      <a href="#/cart">Корзина</a>
+      <a href="${user?'#/account':'#/login'}">${user ? 'Аккаунт — ' + esc(user.name) : 'Войти'}</a>
+      ${Auth.isAdmin() ? `<a href="#/admin">Админ-панель</a>` : ''}
+      ${user ? `<a href="#" data-logout>Выйти</a>` : ''}
+    </nav>
+    <div class="drawer-foot">© GASPARD FASHION</div>`;
+  document.body.appendChild(wrap);
+  requestAnimationFrame(() => wrap.classList.add('open'));
+  const close = () => { wrap.classList.remove('open'); setTimeout(()=>wrap.remove(), 300); };
+  wrap.querySelector('.close-x').onclick = close;
+  wrap.querySelectorAll('a').forEach(a => a.onclick = e => {
+    if (a.dataset.logout !== undefined) {
+      e.preventDefault(); Auth.logout(); close(); toast('Вы вышли из аккаунта'); navigate();
+    } else close();
+  });
+}
+
+/* ---------- product card ---------- */
+function productCard(p) {
+  const user = Auth.current();
+  const isFav = user ? Favs.has(user.id, p.id) : false;
+  const img = p.images && p.images[0];
+  const inStock = p.variants.some(v => v.stock > 0);
+  return `
+    <a class="pcard fade-in" href="#/product/${p.id}">
+      <div class="img-wrap">
+        <div class="tags">
+          ${p.isNew?'<span class="tag tag-new">Новинка</span>':''}
+          ${p.isSale?'<span class="tag tag-sale">Sale</span>':''}
+        </div>
+        ${user ? `<button class="fav-btn ${isFav?'active':''}" data-fav="${p.id}" aria-label="Избранное">${ICONS.heart}</button>`:''}
+        ${img?`<img src="${img}" alt="${esc(p.name)}" loading="lazy">`:`<div class="no-img">НЕТ ФОТО</div>`}
+      </div>
+      <h3>${esc(p.name)}</h3>
+      <div class="price">
+        <span>${fmt(p.price)}</span>
+        ${p.oldPrice && p.oldPrice > p.price ? `<span class="old">${fmt(p.oldPrice)}</span>` : ''}
+      </div>
+      ${!inStock?'<div class="oos">Нет в наличии</div>':''}
+    </a>`;
+}
+
+function bindFavButtons(root=document) {
+  $$('[data-fav]', root).forEach(btn => {
+    btn.onclick = e => {
+      e.preventDefault(); e.stopPropagation();
+      const user = Auth.current();
+      if (!user) { toast('Войдите, чтобы добавить в избранное', 'warn'); location.hash = '#/login'; return; }
+      const pid = btn.dataset.fav;
+      const added = Favs.toggle(user.id, pid);
+      btn.classList.toggle('active', added);
+      toast(added ? 'Добавлено в избранное' : 'Удалено из избранного');
+      renderHeader();
+    };
+  });
+}
+
+/* ---------- PAGES ---------- */
+
+/* HOME */
+function pageHome(app) {
+  const products = Products.all();
+  const newP = products.filter(p => p.isNew).slice(0, 8);
+  const saleP = products.filter(p => p.isSale).slice(0, 8);
+  const featured = products.slice(0, 8);
+
+  app.innerHTML = `
+    <section class="hero">
+      <div class="container">
+        <div style="font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);margin-bottom:24px">New Collection</div>
+        <h1>GASPARD<br>FASHION</h1>
+        <p>Премиальная одежда с характером. Минимализм, качество, вне времени.</p>
+        <a href="#/catalog" class="btn btn-primary">Перейти в каталог</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        ${products.length === 0 ? `
+          <div class="empty">
+            <div class="icon">◈</div>
+            <h3>Скоро здесь появятся новые коллекции</h3>
+            <p>Мы готовим первую коллекцию. Заглядывайте позже — будет красиво.</p>
+            <a href="#/catalog" class="btn btn-outline">Открыть каталог</a>
+          </div>
+        ` : `
+          <div class="section-head">
+            <div>
+              <h2>Избранное</h2>
+              <p>Отборные позиции коллекции</p>
+            </div>
+            <a href="#/catalog" class="btn btn-ghost">Смотреть всё →</a>
+          </div>
+          <div class="grid">${featured.map(productCard).join('')}</div>
+        `}
+      </div>
+    </section>
+
+    ${newP.length ? `
+      <section class="section" style="border-top:1px solid var(--border)">
+        <div class="container">
+          <div class="section-head">
+            <div><h2>Новинки</h2><p>Свежие поступления</p></div>
+            <a href="#/catalog?new=1" class="btn btn-ghost">Все новинки →</a>
+          </div>
+          <div class="grid">${newP.map(productCard).join('')}</div>
+        </div>
+      </section>` : ''}
+
+    ${saleP.length ? `
+      <section class="section" style="border-top:1px solid var(--border)">
+        <div class="container">
+          <div class="section-head">
+            <div><h2>Распродажа</h2><p>Со скидкой</p></div>
+            <a href="#/catalog?sale=1" class="btn btn-ghost">Все скидки →</a>
+          </div>
+          <div class="grid">${saleP.map(productCard).join('')}</div>
+        </div>
+      </section>` : ''}
+  `;
+  bindFavButtons(app);
+}
+
+/* ABOUT */
+function pageAbout(app) {
+  app.innerHTML = `
+    <div class="container" style="max-width:760px;padding:80px 24px">
+      <h1 style="font-family:Georgia,serif;font-weight:400;font-size:44px;margin-bottom:24px">О нас</h1>
+      <p style="font-size:17px;line-height:1.8;color:#2a2a2a">
+        GASPARD FASHION — независимый бренд премиальной одежды. Мы создаём вещи,
+        которые остаются с вами надолго: спокойные силуэты, качественные материалы,
+        внимание к деталям.
+      </p>
+      <p style="font-size:17px;line-height:1.8;color:#2a2a2a;margin-top:20px">
+        Никакого шума. Только суть.
+      </p>
+    </div>`;
+}
+
+/* CATALOG */
+function pageCatalog(app, params) {
+  const state = {
+    search: '',
+    categoryId: params.get('cat') || '',
+    sizes: new Set(),
+    colors: new Set(),
+    priceMin: '',
+    priceMax: '',
+    onlyNew: params.get('new') === '1',
+    onlySale: params.get('sale') === '1',
+    inStock: false,
+    sort: 'new'
+  };
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="catalog-wrap">
+        <aside class="filters" id="filters">
+          <div class="filters-head">
+            <h3>Фильтры</h3>
+            <button class="btn btn-ghost btn-sm" id="reset-filters">Сбросить</button>
+          </div>
+          <div class="filter-group">
+            <h4>Поиск</h4>
+            <div class="search-bar">
+              ${ICONS.search}
+              <input type="text" class="input" id="f-search" placeholder="Название или артикул">
+            </div>
+          </div>
+          <div class="filter-group">
+            <h4>Категории</h4>
+            <div class="filter-list" id="f-cats"></div>
+          </div>
+          <div class="filter-group">
+            <h4>Цена, ₽</h4>
+            <div class="price-row">
+              <input class="input" type="number" min="0" id="f-min" placeholder="от">
+              <input class="input" type="number" min="0" id="f-max" placeholder="до">
+            </div>
+          </div>
+          <div class="filter-group">
+            <h4>Размер</h4>
+            <div class="filter-list" id="f-sizes"></div>
+          </div>
+          <div class="filter-group">
+            <h4>Цвет</h4>
+            <div class="filter-list" id="f-colors"></div>
+          </div>
+          <div class="filter-group">
+            <h4>Прочее</h4>
+            <div class="filter-list">
+              <button class="chip" data-flag="onlyNew">Новинки</button>
+              <button class="chip" data-flag="onlySale">Со скидкой</button>
+              <button class="chip" data-flag="inStock">В наличии</button>
+            </div>
+          </div>
+        </aside>
+
+        <div>
+          <div class="catalog-bar">
+            <div style="display:flex;gap:12px;align-items:center">
+              <button class="btn btn-outline btn-sm filters-toggle" id="toggle-filters">Фильтры</button>
+              <span class="count" id="count"></span>
+            </div>
+            <select class="input" id="sort" style="max-width:220px;min-height:40px;padding:8px 12px">
+              <option value="new">Сначала новые</option>
+              <option value="price-asc">Цена: по возрастанию</option>
+              <option value="price-desc">Цена: по убыванию</option>
+              <option value="name">По названию</option>
+            </select>
+          </div>
+          <div id="grid"></div>
+        </div>
+      </div>
+    </div>`;
+
+  const cats = Categories.all();
+  const catList = $('#f-cats');
+  catList.innerHTML = `<button class="chip ${!state.categoryId?'active':''}" data-cat="">Все</button>` +
+    cats.map(c => `<button class="chip ${state.categoryId===c.id?'active':''}" data-cat="${c.id}">${esc(c.name)}</button>`).join('');
+
+  // gather variants
+  const allProducts = Products.all();
+  const sizesSet = new Set(), colorsSet = new Set();
+  allProducts.forEach(p => p.variants.forEach(v => {
+    if (v.size) sizesSet.add(v.size);
+    if (v.color) colorsSet.add(v.color);
+  }));
+  const sizeList = $('#f-sizes');
+  sizeList.innerHTML = [...sizesSet].sort().map(s => `<button class="chip" data-size="${esc(s)}">${esc(s)}</button>`).join('') || '<span class="muted" style="font-size:13px">—</span>';
+  const colorList = $('#f-colors');
+  colorList.innerHTML = [...colorsSet].sort().map(c => `<button class="chip" data-color="${esc(c)}">${esc(c)}</button>`).join('') || '<span class="muted" style="font-size:13px">—</span>';
+
+  function apply() {
+    let list = Products.all();
+    const q = state.search.trim().toLowerCase();
+    if (q) list = list.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      (p.sku||'').toLowerCase().includes(q) ||
+      (p.description||'').toLowerCase().includes(q)
+    );
+    if (state.categoryId) list = list.filter(p => p.categoryId === state.categoryId);
+    if (state.sizes.size) list = list.filter(p => p.variants.some(v => state.sizes.has(v.size) && v.stock>0));
+    if (state.colors.size) list = list.filter(p => p.variants.some(v => state.colors.has(v.color) && v.stock>0));
+    if (state.priceMin !== '') list = list.filter(p => p.price >= +state.priceMin);
+    if (state.priceMax !== '') list = list.filter(p => p.price <= +state.priceMax);
+    if (state.onlyNew) list = list.filter(p => p.isNew);
+    if (state.onlySale) list = list.filter(p => p.isSale);
+    if (state.inStock) list = list.filter(p => p.variants.some(v => v.stock>0));
+
+    switch (state.sort) {
+      case 'price-asc':  list.sort((a,b)=>a.price-b.price); break;
+      case 'price-desc': list.sort((a,b)=>b.price-a.price); break;
+      case 'name':       list.sort((a,b)=>a.name.localeCompare(b.name,'ru')); break;
+      default:           list.sort((a,b)=> new Date(b.createdAt)-new Date(a.createdAt));
+    }
+
+    $('#count').textContent = list.length ? `${list.length} тов.` : '';
+    const grid = $('#grid');
+    if (list.length === 0) {
+      grid.innerHTML = `
+        <div class="empty">
+          <div class="icon">◇</div>
+          <h3>${Products.all().length === 0 ? 'В каталоге пока нет товаров' : 'Ничего не найдено'}</h3>
+          <p>${Products.all().length === 0
+            ? 'Товары появятся, как только администратор добавит их через панель управления.'
+            : 'Попробуйте изменить фильтры или сбросить поиск.'}</p>
+          ${Products.all().length === 0 ? '' : '<button class="btn btn-outline" id="reset-filters-2">Сбросить фильтры</button>'}
+        </div>`;
+      const r2 = $('#reset-filters-2');
+      if (r2) r2.onclick = reset;
+    } else {
+      grid.innerHTML = `<div class="grid">${list.map(productCard).join('')}</div>`;
+    }
+    bindFavButtons(grid);
   }
 
-  // Синхронизация прокрутки номеров со строками
-  codeEl.addEventListener('scroll', () => {
-    linesEl.scrollTop = codeEl.scrollTop;
-  });
-
-  codeEl.addEventListener('input', () => {
-    localStorage.setItem('mycode', codeEl.value);
-    updateLines();
-  });
-
-  updateLines();
-
-  // ==== Показ ====
-  const preview = document.getElementById('preview');
-  const full = document.getElementById('full');
-
-  document.getElementById('showBtn').addEventListener('click', () => {
-    // Blob-URL надёжнее, чем srcdoc — не ломается на кавычках
-    const blob = new Blob([codeEl.value], { type: 'text/html' });
-    preview.src = URL.createObjectURL(blob);
-    full.style.display = 'block';
-  });
-
-  function close() {
-    full.style.display = 'none';
-    preview.src = 'about:blank';
+  function reset() {
+    state.search=''; state.categoryId=''; state.sizes.clear(); state.colors.clear();
+    state.priceMin=''; state.priceMax=''; state.onlyNew=false; state.onlySale=false; state.inStock=false;
+    state.sort='new';
+    $('#f-search').value=''; $('#f-min').value=''; $('#f-max').value='';
+    $('#sort').value='new';
+    $$('.chip[data-cat]').forEach(c => c.classList.toggle('active', !c.dataset.cat));
+    $$('.chip[data-size],.chip[data-color]').forEach(c => c.classList.remove('active'));
+    $$('.chip[data-flag]').forEach(c => c.classList.remove('active'));
+    apply();
   }
 
-  document.getElementById('exit').addEventListener('click', close);
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') close();
+  $('#f-search').oninput = e => { state.search = e.target.value; apply(); };
+  $('#f-min').oninput = e => { state.priceMin = e.target.value; apply(); };
+  $('#f-max').oninput = e => { state.priceMax = e.target.value; apply(); };
+  $('#sort').onchange = e => { state.sort = e.target.value; apply(); };
+  $('#reset-filters').onclick = reset;
+
+  catList.onclick = e => {
+    const b = e.target.closest('[data-cat]'); if (!b) return;
+    state.categoryId = b.dataset.cat;
+    $$('.chip[data-cat]', catList).forEach(c => c.classList.toggle('active', c===b));
+    apply();
+  };
+  sizeList.onclick = e => {
+    const b = e.target.closest('[data-size]'); if (!b) return;
+    const s = b.dataset.size;
+    if (state.sizes.has(s)) state.sizes.delete(s); else state.sizes.add(s);
+    b.classList.toggle('active'); apply();
+  };
+  colorList.onclick = e => {
+    const b = e.target.closest('[data-color]'); if (!b) return;
+    const c = b.dataset.color;
+    if (state.colors.has(c)) state.colors.delete(c); else state.colors.add(c);
+    b.classList.toggle('active'); apply();
+  };
+  $$('.chip[data-flag]').forEach(chip => chip.onclick = () => {
+    const f = chip.dataset.flag;
+    state[f] = !state[f]; chip.classList.toggle('active', state[f]); apply();
   });
+
+  $('#toggle-filters').onclick = () => $('#filters').classList.toggle('open');
+
+  // init
+  $$('.chip[data-flag]').forEach(c => {
+    if (c.dataset.flag === 'onlyNew' && state.onlyNew) c.classList.add('active');
+    if (c.dataset.flag === 'onlySale' && state.onlySale) c.classList.add('active');
+  });
+  apply();
+}
+
+/* PRODUCT */
+function pageProduct(app, id) {
+  const p = Products.find(id);
+  if (!p) {
+    app.innerHTML = `<div class="container"><div class="empty" style="margin:80px 0"><h3>Товар не найден</h3><a class="btn btn-outline" href="#/catalog">В каталог</a></div></div>`;
+    return;
+  }
+  const user = Auth.current();
+  const cat = p.categoryId ? Categories.find(p.categoryId) : null;
+  const isFav = user ? Favs.has(user.id, p.id) : false;
+  const imgs = p.images && p.images.length ? p.images : [];
+  const sizes = [...new Set(p.variants.map(v => v.size).filter(Boolean))];
+  const colors = [...new Set(p.variants.map(v => v.color).filter(Boolean))];
+  const totalStock = p.variants.reduce((s,v)=>s+v.stock,0);
+
+  app.innerHTML = `
+    <div class="container pdp">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px">
+        <a href="#/">Главная</a> / <a href="#/catalog">Каталог</a>
+        ${cat?` / <a href="#/catalog?cat=${cat.id}">${esc(cat.name)}</a>`:''}
+      </div>
+      <div class="pdp-grid">
+        <div class="gallery">
+          <div class="main" id="main-img">
+            ${imgs[0]?`<img src="${imgs[0]}" alt="${esc(p.name)}">`:`<div class="no-img" style="display:grid;place-items:center;height:100%;color:#c8c8c8;letter-spacing:.2em;font-size:12px">НЕТ ФОТО</div>`}
+          </div>
+          ${imgs.length > 1 ? `
+            <div class="thumbs" id="thumbs">
+              ${imgs.map((src,i)=>`<img src="${src}" class="${i===0?'active':''}" data-i="${i}">`).join('')}
+            </div>` : ''}
+        </div>
+        <div class="pdp-info">
+          <div style="font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">
+            ${cat?esc(cat.name):'Коллекция'}
+            ${p.isNew?' · Новинка':''}
+            ${p.isSale?' · Sale':''}
+          </div>
+          <h1>${esc(p.name)}</h1>
+          <div class="price">
+            <span>${fmt(p.price)}</span>
+            ${p.oldPrice && p.oldPrice>p.price ? `<span class="old">${fmt(p.oldPrice)}</span>`:''}
+          </div>
+
+          ${p.description ? `<div class="desc">${esc(p.description)}</div>` : ''}
+
+          ${colors.length ? `
+            <div class="opt-group">
+              <div class="lbl"><span>Цвет</span><span id="sel-color-lbl" style="color:var(--fg);text-transform:none;letter-spacing:0;font-size:13px"></span></div>
+              <div class="opts" id="colors">${colors.map((c,i)=>`<button class="chip" data-color="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+            </div>`:''}
+
+          ${sizes.length ? `
+            <div class="opt-group">
+              <div class="lbl"><span>Размер</span><span id="sel-size-lbl" style="color:var(--fg);text-transform:none;letter-spacing:0;font-size:13px"></span></div>
+              <div class="opts" id="sizes">${sizes.map(s=>`<button class="chip" data-size="${esc(s)}">${esc(s)}</button>`).join('')}</div>
+            </div>`:''}
+
+          <div class="opt-group">
+            <div class="lbl"><span>Количество</span></div>
+            <div class="qty">
+              <button id="q-minus" type="button">−</button>
+              <span id="q-val">1</span>
+              <button id="q-plus" type="button">+</button>
+            </div>
+          </div>
+
+          <div class="pdp-actions">
+            <button class="btn btn-primary" id="add-to-cart" ${totalStock<=0?'disabled':''}>
+              ${totalStock<=0 ? 'Нет в наличии' : 'Добавить в корзину'}
+            </button>
+            <button class="btn btn-outline" id="fav-toggle" style="padding:12px 16px" aria-label="Избранное">
+              <span style="display:grid;place-items:center;width:20px;height:20px">${ICONS.heart}</span>
+            </button>
+          </div>
+
+          <div class="pdp-meta">
+            ${p.sku?`<div>Артикул: <span style="color:var(--fg)">${esc(p.sku)}</span></div>`:''}
+            <div>В наличии: <span style="color:var(--fg)">${totalStock} шт.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  // gallery
+  if (imgs.length > 1) {
+    $('#thumbs').onclick = e => {
+      const t = e.target.closest('img'); if (!t) return;
+      $$('#thumbs img').forEach(i=>i.classList.remove('active'));
+      t.classList.add('active');
+      $('#main-img').innerHTML = `<img src="${imgs[+t.dataset.i]}" alt="${esc(p.name)}">`;
+    };
+  }
+
+  // fav button
+  const favBtn = $('#fav-toggle');
+  if (isFav) { favBtn.style.background = '#0a0a0a'; favBtn.style.color = '#fff'; favBtn.style.borderColor = '#0a0a0a'; }
+  favBtn.onclick = () => {
+    const u = Auth.current();
+    if (!u) { toast('Войдите, чтобы добавить в избранное', 'warn'); location.hash = '#/login'; return; }
+    const added = Favs.toggle(u.id, p.id);
+    if (added) { favBtn.style.background='#0a0a0a'; favBtn.style.color='#fff'; favBtn.style.borderColor='#0a0a0a'; toast('Добавлено в избранное'); }
+    else { favBtn.style.background=''; favBtn.style.color=''; favBtn.style.borderColor=''; toast('Удалено из избранного'); }
+    renderHeader();
+  };
+
+  // selections
+  let selSize = sizes.length ? null : '';
+  let selColor = colors.length ? null : '';
+
+  function updateColorSelect() {
+    if (!colors.length) return;
+    $('#sel-color-lbl').textContent = selColor || 'Выберите цвет';
+  }
+  function updateSizeSelect() {
+    if (!sizes.length) return;
+    $('#sel-size-lbl').textContent = selSize || 'Выберите размер';
+  }
+  updateColorSelect(); updateSizeSelect();
+
+  if (colors.length) {
+    $('#colors').onclick = e => {
+      const b = e.target.closest('[data-color]'); if (!b) return;
+      $$('#colors .chip').forEach(c => c.classList.toggle('active', c===b));
+      selColor = b.dataset.color; updateColorSelect();
+    };
+  }
+  if (sizes.length) {
+    $('#sizes').onclick = e => {
+      const b = e.target.closest('[data-size]'); if (!b) return;
+      $$('#sizes .chip').forEach(c => c.classList.toggle('active', c===b));
+      selSize = b.dataset.size; updateSizeSelect();
+    };
+  }
+
+  // quantity
+  let qty = 1;
+  const qVal = $('#q-val');
+  const setQty = v => { qty = Math.max(1, Math.min(99, v)); qVal.textContent = qty; };
+  $('#q-minus').onclick = () => setQty(qty-1);
+  $('#q-plus').onclick  = () => setQty(qty+1);
+
+  // add to cart
+  $('#add-to-cart').onclick = () => {
+    const u = Auth.current();
+    if (!u) { toast('Войдите в аккаунт', 'warn'); location.hash = '#/login'; return; }
+    if (sizes.length && !selSize) { toast('Необходимо выбрать размер', 'error'); return; }
+    if (colors.length && !selColor) { toast('Необходимо выбрать цвет', 'error'); return; }
+    const v = p.variants.find(v => (v.size||'') === (selSize||'') && (v.color||'') === (selColor||''));
+    if (!v) { toast('Такой вариант недоступен', 'error'); return; }
+    if (v.stock < qty) { toast('Недостаточно товара на складе', 'error'); return; }
+    Cart.add(u.id, p.id, selSize||'', selColor||'', qty);
+    renderHeader();
+    toast('Товар добавлен в корзину');
+    const btn = $('#add-to-cart');
+    btn.textContent = '✓ Добавлено';
+    setTimeout(()=>{ btn.textContent = 'Добавить в корзину'; }, 1200);
+  };
+}
+
+/* CART */
+function pageCart(app) {
+  const user = Auth.current();
+  if (!user) {
+    app.innerHTML = `<div class="container"><div class="empty" style="margin:80px 0"><h3>Войдите в аккаунт</h3><p>Чтобы посмотреть корзину, войдите или зарегистрируйтесь.</p><a class="btn btn-primary" href="#/login">Войти</a></div></div>`;
+    return;
+  }
+  const items = Cart.forUser(user.id);
+  const products = Products.all();
+  const detailed = items.map(it => {
+    const p = products.find(x=>x.id===it.productId);
+    return p ? { ...it, product: p } : null;
+  }).filter(Boolean);
+
+  if (detailed.length === 0) {
+    app.innerHTML = `<div class="container">
+      <h1 style="font-family:Georgia,serif;font-weight:400;font-size:34px;padding:40px 0 0">Корзина</h1>
+      <div class="empty" style="margin:32px 0 80px">
+        <div class="icon">◻</div>
+        <h3>Ваша корзина пуста</h3>
+        <p>Добавьте что-нибудь из каталога — и это появится здесь.</p>
+        <a class="btn btn-primary" href="#/catalog">Перейти в каталог</a>
+      </div>
+    </div>`;
+    return;
+  }
+
+  const total = detailed.reduce((s,i)=> s + i.product.price * i.quantity, 0);
+  const count = detailed.reduce((s,i)=> s + i.quantity, 0);
+
+  app.innerHTML = `
+    <div class="container">
+      <h1 style="font-family:Georgia,serif;font-weight:400;font-size:34px;padding:40px 0 8px">Корзина</h1>
+      <p class="muted">${count} тов.</p>
+      <div class="cart-grid">
+        <div id="cart-items">
+          ${detailed.map(it => {
+            const img = it.product.images && it.product.images[0];
+            return `
+              <div class="cart-item" data-key="${it.productId}|${esc(it.size)}|${esc(it.color)}">
+                <a href="#/product/${it.product.id}" class="img">${img?`<img src="${img}" alt="">`:'<div class="no-img" style="display:grid;place-items:center;height:100%;color:#c8c8c8;font-size:10px">НЕТ ФОТО</div>'}</a>
+                <div>
+                  <h4><a href="#/product/${it.product.id}">${esc(it.product.name)}</a></h4>
+                  <div class="meta">
+                    ${it.size?`<span>Размер: <b>${esc(it.size)}</b></span>`:''}
+                    ${it.color?`<span>Цвет: <b>${esc(it.color)}</b></span>`:''}
+                  </div>
+                  <div class="price">${fmt(it.product.price)}</div>
+                </div>
+                <div class="controls">
+                  <div class="qty">
+                    <button type="button" data-q="-1">−</button>
+                    <span>${it.quantity}</span>
+                    <button type="button" data-q="+1">+</button>
+                  </div>
+                  <button class="link-danger" data-remove type="button">Удалить</button>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>
+        <div class="summary">
+          <h3>Итого</h3>
+          <div class="summary-row"><span>Товаров</span><span>${count}</span></div>
+          <div class="summary-row"><span>Доставка</span><span>—</span></div>
+          <div class="summary-total"><span>К оплате</span><span>${fmt(total)}</span></div>
+          <a class="btn btn-primary btn-block" href="#/checkout">Оформить заказ</a>
+        </div>
+      </div>
+    </div>`;
+
+  $('#cart-items').onclick = e => {
+    const row = e.target.closest('.cart-item'); if (!row) return;
+    const [pid, size, color] = row.dataset.key.split('|');
+    const btnQ = e.target.closest('[data-q]');
+    if (btnQ) {
+      const cur = +row.querySelector('.qty span').textContent;
+      const delta = btnQ.dataset.q === '+1' ? 1 : -1;
+      Cart.updateQty(user.id, pid, size, color, cur + delta);
+      renderHeader(); pageCart(app); return;
+    }
+    if (e.target.closest('[data-remove]')) {
+      Cart.remove(user.id, pid, size, color);
+      renderHeader(); toast('Товар удалён'); pageCart(app); return;
+    }
+  };
+}
+
+/* CHECKOUT */
+function pageCheckout(app) {
+  const user = Auth.current();
+  if (!user) { location.hash = '#/login'; return; }
+  const items = Cart.forUser(user.id);
+  const products = Products.all();
+  const detailed = items.map(it => {
+    const p = products.find(x=>x.id===it.productId);
+    return p ? { ...it, product: p } : null;
+  }).filter(Boolean);
+  if (!detailed.length) { location.hash = '#/cart'; return; }
+  const total = detailed.reduce((s,i)=> s + i.product.price * i.quantity, 0);
+
+  app.innerHTML = `
+    <div class="container">
+      <h1 style="font-family:Georgia,serif;font-weight:400;font-size:34px;padding:40px 0 8px">Оформление заказа</h1>
+      <p class="muted">Заполните контактные данные</p>
+      <div class="cart-grid" style="grid-template-columns:1fr 340px">
+        <form id="checkout-form" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px">
+          <div class="row2">
+            <div class="field"><label>Имя *</label><input class="input" name="name" required value="${esc(user.name)}"></div>
+            <div class="field"><label>Email *</label><input class="input" type="email" name="email" required value="${esc(user.email)}"></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>Телефон *</label><input class="input" name="phone" required placeholder="+7 ___ ___-__-__"></div>
+            <div class="field"><label>Город</label><input class="input" name="city" placeholder="Москва"></div>
+          </div>
+          <div class="field"><label>Адрес доставки *</label><input class="input" name="address" required placeholder="Улица, дом, квартира"></div>
+          <div class="field"><label>Комментарий</label><textarea class="input" name="comment" rows="3"></textarea></div>
+          <button type="submit" class="btn btn-primary btn-block">Подтвердить заказ</button>
+        </form>
+        <div class="summary">
+          <h3>Ваш заказ</h3>
+          ${detailed.map(it=>`
+            <div class="summary-row" style="align-items:start">
+              <span style="flex:1">${esc(it.product.name)}${it.size?' · '+esc(it.size):''}${it.color?' · '+esc(it.color):''} <span class="muted">×${it.quantity}</span></span>
+              <span>${fmt(it.product.price*it.quantity)}</span>
+            </div>`).join('')}
+          <div class="summary-total"><span>Итого</span><span>${fmt(total)}</span></div>
+        </div>
+      </div>
+    </div>`;
+
+  $('#checkout-form').onsubmit = async e => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    try {
+      const customer = {
+        name: fd.get('name'), email: fd.get('email'), phone: fd.get('phone'),
+        address: [fd.get('city'), fd.get('address')].filter(Boolean).join(', '),
+        comment: fd.get('comment')
+      };
+      const order = Orders.create({ userId: user.id, items, customer });
+      renderHeader();
+      toast('Заказ оформлен', 'success');
+      location.hash = '#/account';
+      setTimeout(() => {
+        openModal({
+          title:'Заказ оформлен',
+          body:`<p style="margin:0">Ваш заказ <b>#${order.id}</b> принят.</p><p style="margin:8px 0 0" class="muted">Мы свяжемся с вами по указанным контактам.</p>`,
+          actions:[{ label:'Хорошо', variant:'btn-primary' }]
+        });
+      }, 300);
+    } catch(err) {
+      toast(err.message || 'Произошла ошибка', 'error');
+    }
+  };
+}
+
+/* FAVORITES */
+function pageFavorites(app) {
+  const user = Auth.current();
+  if (!user) { location.hash = '#/login'; return; }
+  const ids = Favs.forUser(user.id);
+  const list = Products.all().filter(p => ids.includes(p.id));
+  app.innerHTML = `
+    <div class="container">
+      <h1 style="font-family:Georgia,serif;font-weight:400;font-size:34px;padding:40px 0 8px">Избранное</h1>
+      <p class="muted">${list.length} тов.</p>
+      <div style="padding:24px 0 80px">
+        ${list.length === 0
+          ? `<div class="empty"><div class="icon">♡</div><h3>В избранном пока ничего нет</h3><p>Добавляйте товары кнопкой ♥, чтобы вернуться к ним позже.</p><a class="btn btn-outline" href="#/catalog">Перейти в каталог</a></div>`
+          : `<div class="grid">${list.map(productCard).join('')}</div>`}
+      </div>
+    </div>`;
+  bindFavButtons(app);
+}
+
+/* LOGIN / REGISTER */
+function pageLogin(app) {
+  if (Auth.current()) { location.hash = '#/account'; return; }
+  app.innerHTML = `
+    <div class="auth-wrap">
+      <h1>Вход</h1>
+      <p class="sub">Войдите в свой аккаунт GASPARD</p>
+      <form id="login-form">
+        <div class="field"><label>Email</label><input class="input" type="email" name="email" required autocomplete="email"></div>
+        <div class="field"><label>Пароль</label><input class="input" type="password" name="password" required autocomplete="current-password"></div>
+        <button class="btn btn-primary btn-block" type="submit">Войти</button>
+      </form>
+      <div class="switch">Нет аккаунта? <a href="#/register">Зарегистрироваться</a></div>
+    </div>`;
+  $('#login-form').onsubmit = async e => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const btn = e.target.querySelector('button');
+    try { btn.disabled = true; btn.textContent = 'Входим…';
+      await Auth.login(fd.get('email'), fd.get('password'));
+      toast('Добро пожаловать');
+      renderHeader();
+      location.hash = Auth.isAdmin() ? '#/admin' : '#/account';
+    } catch(err) { toast(err.message || 'Ошибка', 'error'); }
+    finally { btn.disabled = false; btn.textContent = 'Войти'; }
+  };
+}
+function pageRegister(app) {
+  if (Auth.current()) { location.hash = '#/account'; return; }
+  app.innerHTML = `
+    <div class="auth-wrap">
+      <h1>Регистрация</h1>
+      <p class="sub">Создайте аккаунт GASPARD</p>
+      <form id="reg-form">
+        <div class="field"><label>Имя</label><input class="input" name="name" required autocomplete="name"></div>
+        <div class="field"><label>Email</label><input class="input" type="email" name="email" required autocomplete="email"></div>
+        <div class="field"><label>Пароль</label><input class="input" type="password" name="password" required minlength="6" autocomplete="new-password"></div>
+        <button class="btn btn-primary btn-block" type="submit">Создать аккаунт</button>
+      </form>
+      <div class="switch">Уже есть аккаунт? <a href="#/login">Войти</a></div>
+    </div>`;
+  $('#reg-form').onsubmit = async e => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const btn = e.target.querySelector('button');
+    try { btn.disabled = true; btn.textContent = 'Создаём…';
+      await Auth.register({ name: fd.get('name'), email: fd.get('email'), password: fd.get('password') });
+      toast('Аккаунт создан');
+      renderHeader();
+      location.hash = '#/account';
+    } catch(err) { toast(err.message || 'Ошибка', 'error'); }
+    finally { btn.disabled = false; btn.textContent = 'Создать аккаунт'; }
+  };
+}
+
+/* ACCOUNT */
+function pageAccount(app) {
+  const user = Auth.current();
+  if (!user) { location.hash = '#/login'; return; }
+  let tab = 'orders';
+
+  function render() {
+    const orders = Orders.forUser(user.id);
+    const favs = Favs.forUser(user.id).length;
+    const cartCount = Cart.count(user.id);
+    app.innerHTML = `
+      <div class="container account-grid">
+        <aside class="acc-nav">
+          <button data-tab="orders" class="${tab==='orders'?'active':''}">Мои заказы</button>
+          <button data-tab="profile" class="${tab==='profile'?'active':''}">Профиль</button>
+          <button data-tab="stats" class="${tab==='stats'?'active':''}">Статистика</button>
+          <button data-logout style="color:var(--danger);margin-top:12px">Выйти</button>
+        </aside>
+        <div id="acc-body"></div>
+      </div>`;
+
+    const body = $('#acc-body');
+
+    if (tab === 'orders') {
+      body.innerHTML = `
+        <h1 style="font-family:Georgia,serif;font-weight:400;font-size:30px;margin-bottom:20px">Мои заказы</h1>
+        ${orders.length === 0
+          ? `<div class="empty"><div class="icon">◫</div><h3>У вас пока нет заказов</h3><p>Оформите первый заказ — он появится здесь.</p><a class="btn btn-outline" href="#/catalog">В каталог</a></div>`
+          : orders.map(o => `
+              <div class="order-card">
+                <div class="order-head">
+                  <div>
+                    <div class="id">#${esc(o.id)}</div>
+                    <div class="muted" style="font-size:13px">${dateRu(o.createdAt)}</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div class="total">${fmt(o.total)}</div>
+                    <div style="margin-top:6px"><span class="status status-${o.status}">${statusLabel(o.status)}</span></div>
+                  </div>
+                </div>
+                <div class="order-items">
+                  ${o.items.map(it => `
+                    <div class="order-item">
+                      <span class="name">${esc(it.productName)}${it.size?' · '+esc(it.size):''}${it.color?' · '+esc(it.color):''} <span class="muted">×${it.quantity}</span></span>
+                      <span>${fmt(it.price*it.quantity)}</span>
+                    </div>`).join('')}
+                </div>
+              </div>`).join('')}
+      `;
+    }
+
+    if (tab === 'profile') {
+      body.innerHTML = `
+        <h1 style="font-family:Georgia,serif;font-weight:400;font-size:30px;margin-bottom:20px">Профиль</h1>
+        <div class="panel" style="padding:24px">
+          <div class="field"><label>Имя</label><input class="input" id="p-name" value="${esc(user.name)}"></div>
+          <div class="field"><label>Email</label><input class="input" value="${esc(user.email)}" disabled></div>
+          <button class="btn btn-primary" id="save-profile">Сохранить</button>
+        </div>`;
+      $('#save-profile').onclick = () => {
+        const name = $('#p-name').value.trim();
+        if (name.length < 2) { toast('Укажите имя', 'error'); return; }
+        Users.update(user.id, { name });
+        toast('Изменения сохранены');
+        renderHeader(); render();
+      };
+    }
+
+    if (tab === 'stats') {
+      body.innerHTML = `
+        <h1 style="font-family:Georgia,serif;font-weight:400;font-size:30px;margin-bottom:20px">Статистика</h1>
+        <div class="stats-grid">
+          <div class="stat"><div class="label">Заказов</div><div class="value">${orders.length}</div></div>
+          <div class="stat"><div class="label">Избранное</div><div class="value">${favs}</div></div>
+          <div class="stat"><div class="label">В корзине</div><div class="value">${cartCount}</div></div>
+          <div class="stat"><div class="label">Всего потрачено</div><div class="value">${fmt(orders.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+o.total,0))}</div></div>
+        </div>`;
+    }
+
+    body.onclick = e => {
+      if (e.target.closest('[data-logout]')) {
+        Auth.logout(); toast('Вы вышли из аккаунта'); renderHeader(); location.hash = '#/';
+      }
+    };
+    $$('.acc-nav button[data-tab]').forEach(b => b.onclick = () => { tab = b.dataset.tab; render(); });
+  }
+  render();
+}
+
+/* 404 */
+function page404(app) {
+  app.innerHTML = `<div class="container"><div class="empty" style="margin:80px 0"><h3>Страница не найдена</h3><a class="btn btn-outline" href="#/">На главную</a></div></div>`;
+}
+
+/* ============ ADMIN ============ */
+function pageAdmin(app, sub) {
+  const user = Auth.current();
+  const hasAdmin = Auth.hasAdmin();
+
+  // Первый запуск — создание администратора
+  if (!hasAdmin) {
+    app.innerHTML = `
+      <div class="auth-wrap" style="max-width:480px">
+        <h1>Настройка магазина</h1>
+        <p class="sub">Создайте аккаунт администратора. Он будет обладать полным доступом к панели управления.</p>
+        <form id="setup-admin-form">
+          <div class="field"><label>Имя</label><input class="input" name="name" required></div>
+          <div class="field"><label>Email</label><input class="input" type="email" name="email" required></div>
+          <div class="field"><label>Пароль (минимум 8 символов)</label><input class="input" type="password" name="password" minlength="8" required></div>
+          <div class="field"><label>Повторите пароль</label><input class="input" type="password" name="confirm" minlength="8" required></div>
+          <button class="btn btn-primary btn-block" type="submit">Создать администратора</button>
+        </form>
+      </div>`;
+    $('#setup-admin-form').onsubmit = async e => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      if (fd.get('password') !== fd.get('confirm')) { toast('Пароли не совпадают', 'error'); return; }
+      try {
+        await Auth.createAdmin({ name: fd.get('name'), email: fd.get('email'), password: fd.get('password') });
+        toast('Администратор создан');
+        renderHeader(); navigate();
+      } catch(err) { toast(err.message || 'Ошибка', 'error'); }
+    };
+    return;
+  }
+
+  // Не админ — доступ запрещён
+  if (!user || user.role !== 'admin') {
+    app.innerHTML = `
+      <div class="container" style="max-width:520px;padding:100px 24px;text-align:center">
+        <div style="font-size:44px;margin-bottom:16px">⛔</div>
+        <h1 style="font-family:Georgia,serif;font-weight:400;font-size:30px;margin-bottom:12px">Доступ запрещён</h1>
+        <p class="muted" style="margin-bottom:24px">Эта страница доступна только администраторам магазина.</p>
+        ${user ? `<a class="btn btn-outline" href="#/">На главную</a>` : `<a class="btn btn-primary" href="#/login">Войти</a>`}
+      </div>`;
+    return;
+  }
+
+  const section = (sub || '/').replace(/^\/+/, '').split('/')[0] || 'dashboard';
+
+  app.innerHTML = `
+    <div class="admin-wrap">
+      <aside class="admin-side">
+        <div class="brand">GASPARD</div>
+        <a href="#/admin" data-nav="dashboard">Dashboard</a>
+        <a href="#/admin/products" data-nav="products">Товары</a>
+        <a href="#/admin/orders" data-nav="orders">Заказы</a>
+        <a href="#/admin/users" data-nav="users">Пользователи</a>
+        <a href="#/admin/categories" data-nav="categories">Категории</a>
+        <div class="bottom">
+          <a href="#/">← В магазин</a>
+          <a href="#" data-admin-logout>Выйти</a>
+        </div>
+      </aside>
+      <div class="admin-content" id="admin-content"></div>
+    </div>`;
+
+  $$('.admin-side a[data-nav]').forEach(a => a.classList.toggle('active', a.dataset.nav === section));
+  $('.admin-side [data-admin-logout]').onclick = e => {
+    e.preventDefault(); Auth.logout(); toast('Вы вышли'); renderHeader(); location.hash = '#/';
+  };
+
+  const content = $('#admin-content');
+  if (section === 'dashboard') adminDashboard(content);
+  else if (section === 'products') adminProducts(content);
+  else if (section === 'orders') adminOrders(content);
+  else if (section === 'users') adminUsers(content);
+  else if (section === 'categories') adminCategories(content);
+  else adminDashboard(content);
+}
+
+/* ADMIN: dashboard */
+function adminDashboard(content) {
+  const products = Products.all();
+  const orders = Orders.all();
+  const users = Users.all();
+  const revenue = orders.filter(o => o.status !== 'cancelled').reduce((s,o)=>s+o.total,0);
+  const inStock = products.filter(p => p.variants.some(v => v.stock>0)).length;
+  const outStock = products.length - inStock;
+  const newOrders = orders.filter(o => o.status === 'new').length;
+
+  content.innerHTML = `
+    <div class="admin-header">
+      <div>
+        <h1>Dashboard</h1>
+        <p>Обзор магазина GASPARD FASHION</p>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat"><div class="label">Товары</div><div class="value">${products.length}</div><div class="sub">всего позиций</div></div>
+      <div class="stat"><div class="label">Заказы</div><div class="value">${orders.length}</div><div class="sub">${newOrders} новых</div></div>
+      <div class="stat"><div class="label">Пользователи</div><div class="value">${users.length}</div></div>
+      <div class="stat"><div class="label">Выручка</div><div class="value">${fmt(revenue)}</div><div class="sub">без отменённых</div></div>
+      <div class="stat"><div class="label">В наличии</div><div class="value">${inStock}</div></div>
+      <div class="stat"><div class="label">Нет в наличии</div><div class="value">${outStock}</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Последние заказы</h3><a href="#/admin/orders" class="btn btn-ghost btn-sm">Все заказы →</a></div>
+      ${orders.length === 0
+        ? `<div style="padding:48px 24px;text-align:center;color:var(--muted)">Заказы отсутствуют</div>`
+        : `<div class="table-wrap"><table class="tbl">
+            <thead><tr><th>ID</th><th>Покупатель</th><th>Сумма</th><th>Статус</th><th>Дата</th></tr></thead>
+            <tbody>${orders.slice(0,5).map(o=>`
+              <tr>
+                <td class="muted" style="font-family:ui-monospace,monospace;font-size:12px">#${esc(o.id.slice(-8))}</td>
+                <td>${esc(o.customer.name)}</td>
+                <td>${fmt(o.total)}</td>
+                <td><span class="status status-${o.status}">${statusLabel(o.status)}</span></td>
+                <td class="muted">${dateRu(o.createdAt)}</td>
+              </tr>`).join('')}</tbody>
+          </table></div>`}
+    </div>`;
+}
+
+/* ADMIN: products */
+function adminProducts(content) {
+  function render() {
+    const products = Products.all();
+    const cats = Categories.all();
+    const catMap = Object.fromEntries(cats.map(c => [c.id, c.name]));
+    content.innerHTML = `
+      <div class="admin-header">
+        <div><h1>Товары</h1><p>Управление каталогом</p></div>
+        <button class="btn btn-primary" id="add-product">+ Добавить товар</button>
+      </div>
+      <div class="panel">
+        ${products.length === 0
+          ? `<div style="padding:60px 24px;text-align:center;color:var(--muted)">Товары отсутствуют</div>`
+          : `<div class="table-wrap"><table class="tbl">
+              <thead><tr><th></th><th>Название</th><th>Категория</th><th>Цена</th><th>Наличие</th><th>Статус</th><th></th></tr></thead>
+              <tbody>${products.map(p => {
+                const stock = p.variants.reduce((s,v)=>s+v.stock,0);
+                return `<tr>
+                  <td>${p.images && p.images[0] ? `<img class="tbl-img" src="${p.images[0]}" alt="">` : `<div class="tbl-img" style="display:grid;place-items:center;color:#ccc;font-size:9px">—</div>`}</td>
+                  <td><b>${esc(p.name)}</b>${p.sku?`<div class="muted" style="font-size:12px">${esc(p.sku)}</div>`:''}</td>
+                  <td class="muted">${p.categoryId && catMap[p.categoryId] ? esc(catMap[p.categoryId]) : '—'}</td>
+                  <td>${fmt(p.price)}${p.oldPrice&&p.oldPrice>p.price?`<div class="muted" style="text-decoration:line-through;font-size:12px">${fmt(p.oldPrice)}</div>`:''}</td>
+                  <td>${stock > 0 ? stock + ' шт.' : '<span class="muted">нет</span>'}</td>
+                  <td>${p.isNew?'<span class="tag tag-new" style="font-size:10px">Новинка</span> ':''}${p.isSale?'<span class="tag tag-sale" style="font-size:10px">Sale</span>':''}</td>
+                  <td><div class="tbl-actions">
+                    <button class="icon-act" data-edit="${p.id}" title="Редактировать">${ICONS.edit}</button>
+                    <button class="icon-act danger" data-del="${p.id}" title="Удалить">${ICONS.trash}</button>
+                  </div></td>
+                </tr>`;
+              }).join('')}</tbody>
+            </table></div>`}
+      </div>`;
+
+    $('#add-product').onclick = () => openProductForm(null);
+    content.onclick = async e => {
+      const edit = e.target.closest('[data-edit]');
+      if (edit) { openProductForm(Products.find(edit.dataset.edit)); return; }
+      const del = e.target.closest('[data-del]');
+      if (del) {
+        const p = Products.find(del.dataset.del);
+        if (!p) return;
+        const ok = await confirmDialog('Удалить товар?', `«${p.name}» будет удалён безвозвратно.`);
+        if (ok) { Products.remove(p.id); toast('Товар удалён'); render(); renderHeader(); }
+      }
+    };
+  }
+
+  function openProductForm(p) {
+    const cats = Categories.all();
+    const editing = !!p;
+    p = p || { name:'', description:'', price:'', oldPrice:'', categoryId:'', sku:'', isNew:false, isSale:false, images:[], variants:[{size:'',color:'',stock:0}] };
+
+    openModal({
+      title: editing ? 'Редактировать товар' : 'Новый товар',
+      wide: true,
+      body: `
+        <div class="field"><label>Название *</label><input class="input" id="pf-name" value="${esc(p.name)}"></div>
+        <div class="field"><label>Описание</label><textarea class="input" id="pf-desc" rows="4">${esc(p.description)}</textarea></div>
+        <div class="row2">
+          <div class="field"><label>Цена, ₽ *</label><input class="input" type="number" min="0" step="0.01" id="pf-price" value="${p.price}"></div>
+          <div class="field"><label>Старая цена, ₽</label><input class="input" type="number" min="0" step="0.01" id="pf-oldprice" value="${p.oldPrice||''}"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Категория</label>
+            <select class="input" id="pf-cat">
+              <option value="">— без категории —</option>
+              ${cats.map(c=>`<option value="${c.id}" ${p.categoryId===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field"><label>Артикул (SKU)</label><input class="input" id="pf-sku" value="${esc(p.sku||'')}"></div>
+        </div>
+        <div class="row2">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="pf-new" ${p.isNew?'checked':''}> Новинка</label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="pf-sale" ${p.isSale?'checked':''}> Распродажа</label>
+        </div>
+        <div class="divider"></div>
+        <div class="field">
+          <label>Варианты (размер · цвет · остаток)</label>
+          <div id="pf-variants"></div>
+          <button type="button" class="btn btn-ghost btn-sm" id="pf-add-variant">+ Добавить вариант</button>
+        </div>
+        <div class="divider"></div>
+        <div class="field">
+          <label>Фотографии</label>
+          <input type="file" id="pf-images" accept="image/*" multiple>
+          <div id="pf-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"></div>
+        </div>
+      `,
+      actions: [
+        { label: 'Отмена', variant: 'btn-ghost' },
+        { label: editing ? 'Сохранить' : 'Добавить', variant: 'btn-primary', onClick: async () => {
+          const name = $('#pf-name').value.trim();
+          const price = parseFloat($('#pf-price').value);
+          const oldPrice = parseFloat($('#pf-oldprice').value) || null;
+          if (!name) { toast('Укажите название', 'error'); return false; }
+          if (!(price >= 0)) { toast('Укажите корректную цену', 'error'); return false; }
+          const variants = $$('#pf-variants .v-row').map(row => ({
+            size: row.querySelector('[data-v-size]').value.trim(),
+            color: row.querySelector('[data-v-color]').value.trim(),
+            stock: parseInt(row.querySelector('[data-v-stock]').value, 10) || 0
+          })).filter(v => v.size || v.color);
+          if (variants.length === 0) variants.push({ size:'', color:'', stock: 0 });
+
+          const images = window.__pfImages || [];
+          const data = {
+            id: p.id,
+            name,
+            description: $('#pf-desc').value.trim(),
+            price,
+            oldPrice: oldPrice && oldPrice > price ? oldPrice : null,
+            categoryId: $('#pf-cat').value || null,
+            sku: $('#pf-sku').value.trim(),
+            isNew: $('#pf-new').checked,
+            isSale: $('#pf-sale').checked,
+            variants,
+            images
+          };
+          try {
+            Products.save(data);
+            toast(editing ? 'Изменения сохранены' : 'Товар добавлен');
+            delete window.__pfImages;
+            render(); renderHeader();
+            return true;
+          } catch(e) { toast(e.message, 'error'); return false; }
+        }}
+      ],
+      onMount: (root, close) => {
+        window.__pfImages = [...(p.images || [])];
+
+        const vWrap = $('#pf-variants', root);
+        function renderVariants() {
+          vWrap.innerHTML = (p.variants && p.variants.length ? p.variants : [{size:'',color:'',stock:0}]).map((v,i) => `
+            <div class="v-row" style="display:grid;grid-template-columns:1fr 1fr 100px 40px;gap:8px;margin-bottom:8px">
+              <input class="input" data-v-size placeholder="Размер" value="${esc(v.size)}">
+              <input class="input" data-v-color placeholder="Цвет" value="${esc(v.color)}">
+              <input class="input" type="number" min="0" data-v-stock placeholder="0" value="${v.stock}">
+              <button type="button" class="icon-act danger" data-rm>${ICONS.trash}</button>
+            </div>`).join('');
+          vWrap.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => {
+            const rows = [...vWrap.querySelectorAll('.v-row')];
+            const idx = rows.indexOf(b.closest('.v-row'));
+            p.variants = [...vWrap.querySelectorAll('.v-row')].map(row => ({
+              size: row.querySelector('[data-v-size]').value,
+              color: row.querySelector('[data-v-color]').value,
+              stock: +row.querySelector('[data-v-stock]').value || 0
+            }));
+            p.variants.splice(idx,1);
+            if (p.variants.length===0) p.variants.push({size:'',color:'',stock:0});
+            renderVariants();
+          });
+        }
+        // Считываем при кликах
+        vWrap.addEventListener('input', () => {
+          p.variants = [...vWrap.querySelectorAll('.v-row')].map(row => ({
+            size: row.querySelector('[data-v-size]').value,
+            color: row.querySelector('[data-v-color]').value,
+            stock: +row.querySelector('[data-v-stock]').value || 0
+          }));
+        });
+        renderVariants();
+
+        $('#pf-add-variant', root).onclick = () => {
+          p.variants = [...vWrap.querySelectorAll('.v-row')].map(row => ({
+            size: row.querySelector('[data-v-size]').value,
+            color: row.querySelector('[data-v-color]').value,
+            stock: +row.querySelector('[data-v-stock]').value || 0
+          }));
+          p.variants.push({size:'',color:'',stock:0});
+          renderVariants();
+        };
+
+        // images
+        function renderPreview() {
+          const wrap = $('#pf-preview', root);
+          wrap.innerHTML = window.__pfImages.map((src,i)=>`
+            <div style="position:relative">
+              <img src="${src}" style="width:72px;height:90px;object-fit:cover;border-radius:6px;border:1px solid var(--border)">
+              <button type="button" class="icon-act danger" data-rm-img="${i}" style="position:absolute;top:-4px;right:-4px;background:#fff;border:1px solid var(--border);width:22px;height:22px;font-size:14px">×</button>
+            </div>`).join('');
+          wrap.querySelectorAll('[data-rm-img]').forEach(b => b.onclick = () => {
+            window.__pfImages.splice(+b.dataset.rmImg, 1); renderPreview();
+          });
+        }
+        renderPreview();
+
+        $('#pf-images', root).onchange = async e => {
+          const files = [...e.target.files];
+          for (const f of files) {
+            try {
+              const dataUrl = await resizeImage(f, 900, 0.82);
+              window.__pfImages.push(dataUrl);
+            } catch { toast('Не удалось обработать файл', 'error'); }
+          }
+          e.target.value = '';
+          renderPreview();
+        };
+      }
+    });
+  }
+
+  render();
+}
+
+/* ADMIN: orders */
+function adminOrders(content) {
+  function render() {
+    const orders = Orders.all();
+    content.innerHTML = `
+      <div class="admin-header">
+        <div><h1>Заказы</h1><p>Управление заказами магазина</p></div>
+      </div>
+      <div class="panel">
+        ${orders.length === 0
+          ? `<div style="padding:60px 24px;text-align:center;color:var(--muted)">Заказы отсутствуют</div>`
+          : `<div class="table-wrap"><table class="tbl">
+              <thead><tr><th>ID</th><th>Покупатель</th><th>Товары</th><th>Сумма</th><th>Дата</th><th>Статус</th></tr></thead>
+              <tbody>${orders.map(o => `
+                <tr>
+                  <td class="muted" style="font-family:ui-monospace,monospace;font-size:12px">#${esc(o.id.slice(-8))}</td>
+                  <td>
+                    <div>${esc(o.customer.name)}</div>
+                    <div class="muted" style="font-size:12px">${esc(o.customer.email)}</div>
+                    ${o.customer.phone?`<div class="muted" style="font-size:12px">${esc(o.customer.phone)}</div>`:''}
+                  </td>
+                  <td class="muted" style="font-size:12.5px">${o.items.map(it=>esc(it.productName)+' ×'+it.quantity).join(', ')}</td>
+                  <td><b>${fmt(o.total)}</b></td>
+                  <td class="muted" style="font-size:12.5px">${dateRu(o.createdAt)}</td>
+                  <td>
+                    <select class="status-select" data-oid="${o.id}">
+                      ${ORDER_STATUSES.map(s=>`<option value="${s.key}" ${o.status===s.key?'selected':''}>${s.label}</option>`).join('')}
+                    </select>
+                  </td>
+                </tr>`).join('')}
+              </tbody></table></div>`}
+      </div>`;
+    $$('select[data-oid]').forEach(sel => sel.onchange = () => {
+      try { Orders.updateStatus(sel.dataset.oid, sel.value); toast('Статус заказа изменён'); }
+      catch(e) { toast(e.message, 'error'); render(); }
+    });
+  }
+  render();
+}
+
+/* ADMIN: users */
+function adminUsers(content) {
+  const me = Auth.current();
+  function render() {
+    const users = Users.all();
+    const orders = Orders.all();
+    content.innerHTML = `
+      <div class="admin-header">
+        <div><h1>Пользователи</h1><p>Все зарегистрированные аккаунты</p></div>
+      </div>
+      <div class="panel">
+        ${users.length === 0
+          ? `<div style="padding:60px 24px;text-align:center;color:var(--muted)">Пользователи отсутствуют</div>`
+          : `<div class="table-wrap"><table class="tbl">
+              <thead><tr><th>Имя</th><th>Email</th><th>Роль</th><th>Заказов</th><th>Регистрация</th><th></th></tr></thead>
+              <tbody>${users.map(u => {
+                const count = orders.filter(o=>o.userId===u.id).length;
+                const isMe = u.id === me.id;
+                return `<tr>
+                  <td><b>${esc(u.name)}</b>${isMe?' <span class="muted" style="font-size:11px">(вы)</span>':''}</td>
+                  <td class="muted">${esc(u.email)}</td>
+                  <td>${u.role==='admin'?'<span class="tag tag-new">admin</span>':'<span class="muted">user</span>'}</td>
+                  <td>${count}</td>
+                  <td class="muted">${dateRu(u.createdAt)}</td>
+                  <td><div class="tbl-actions">
+                    ${u.role==='admin'
+                      ? `<button class="btn btn-ghost btn-sm" data-role="${u.id}" data-to="user">Снять админа</button>`
+                      : `<button class="btn btn-ghost btn-sm" data-role="${u.id}" data-to="admin">Сделать админом</button>`}
+                    ${isMe?'':`<button class="icon-act danger" data-del="${u.id}" title="Удалить">${ICONS.trash}</button>`}
+                  </div></td>
+                </tr>`;
+              }).join('')}</tbody></table></div>`}
+      </div>`;
+
+    content.onclick = async e => {
+      const role = e.target.closest('[data-role]');
+      if (role) {
+        try { Users.update(role.dataset.role, { role: role.dataset.to }); toast('Роль обновлена'); render(); }
+        catch(err) { toast(err.message, 'error'); }
+        return;
+      }
+      const del = e.target.closest('[data-del]');
+      if (del) {
+        const u = Users.find(del.dataset.del);
+        const ok = await confirmDialog('Удалить пользователя?', `${u ? u.name : ''} будет удалён безвозвратно.`);
+        if (ok) {
+          try { Users.remove(del.dataset.del, me.id); toast('Пользователь удалён'); render(); }
+          catch(err) { toast(err.message, 'error'); }
+        }
+      }
+    };
+  }
+  render();
+}
+
+/* ADMIN: categories */
+function adminCategories(content) {
+  function render() {
+    const cats = Categories.all();
+    const products = Products.all();
+    content.innerHTML = `
+      <div class="admin-header">
+        <div><h1>Категории</h1><p>Разделы каталога</p></div>
+        <button class="btn btn-primary" id="add-cat">+ Новая категория</button>
+      </div>
+      <div class="panel">
+        ${cats.length === 0
+          ? `<div style="padding:60px 24px;text-align:center;color:var(--muted)">Категорий пока нет. Создайте первую.</div>`
+          : `<div class="table-wrap"><table class="tbl">
+              <thead><tr><th>Название</th><th>Товаров</th><th>Создана</th><th></th></tr></thead>
+              <tbody>${cats.map(c => {
+                const count = products.filter(p => p.categoryId === c.id).length;
+                return `<tr>
+                  <td><b>${esc(c.name)}</b></td>
+                  <td>${count}</td>
+                  <td class="muted">${dateRu(c.createdAt)}</td>
+                  <td><div class="tbl-actions">
+                    <button class="icon-act" data-ren="${c.id}" title="Переименовать">${ICONS.edit}</button>
+                    <button class="icon-act danger" data-del="${c.id}" title="Удалить">${ICONS.trash}</button>
+                  </div></td>
+                </tr>`;
+              }).join('')}</tbody></table></div>`}
+      </div>`;
+
+    $('#add-cat').onclick = () => {
+      openModal({
+        title: 'Новая категория',
+        body: `<div class="field"><label>Название</label><input class="input" id="cat-name" placeholder="Например: Худи"></div>`,
+        actions: [
+          { label: 'Отмена', variant: 'btn-ghost' },
+          { label: 'Создать', variant: 'btn-primary', onClick: () => {
+            try {
+              Categories.save($('#cat-name').value);
+              toast('Категория создана'); render(); return true;
+            } catch(e) { toast(e.message, 'error'); return false; }
+          }}
+        ]
+      });
+    };
+
+    content.onclick = async e => {
+      const ren = e.target.closest('[data-ren]');
+      if (ren) {
+        const c = Categories.find(ren.dataset.ren);
+        openModal({
+          title: 'Переименовать категорию',
+          body: `<div class="field"><label>Название</label><input class="input" id="cat-rename" value="${esc(c.name)}"></div>`,
+          actions: [
+            { label:'Отмена', variant:'btn-ghost' },
+            { label:'Сохранить', variant:'btn-primary', onClick: () => {
+              const v = $('#cat-rename').value.trim();
+              if (!v) { toast('Укажите название', 'error'); return false; }
+              const list = Categories.all().map(x => x.id === c.id ? { ...x, name: v } : x);
+              setCategories(list); toast('Изменено'); render(); return true;
+            }}
+          ]
+        });
+        return;
+      }
+      const del = e.target.closest('[data-del]');
+      if (del) {
+        const c = Categories.find(del.dataset.del);
+        const ok = await confirmDialog('Удалить категорию?', `«${c.name}» будет удалена. Товары останутся без категории.`);
+        if (ok) { Categories.remove(c.id); toast('Категория удалена'); render(); }
+      }
+    };
+  }
+  render();
+}
+
+/* ---------- router ---------- */
+function parseHash() {
+  const h = (location.hash || '#/').slice(1) || '/';
+  const [path, qs=''] = h.split('?');
+  return { path: path || '/', params: new URLSearchParams(qs) };
+}
+function navigate() {
+  const { path, params } = parseHash();
+  renderHeader();
+  const app = $('#app');
+  window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+  if (path === '/' || path === '') return pageHome(app);
+  if (path === '/about') return pageAbout(app);
+  if (path === '/catalog') return pageCatalog(app, params);
+  if (path.startsWith('/product/')) return pageProduct(app, path.slice(9));
+  if (path === '/cart') return pageCart(app);
+  if (path === '/checkout') return pageCheckout(app);
+  if (path === '/favorites') return pageFavorites(app);
+  if (path === '/account') return pageAccount(app);
+  if (path === '/login') return pageLogin(app);
+  if (path === '/register') return pageRegister(app);
+  if (path.startsWith('/admin')) return pageAdmin(app, path.slice(6));
+  return page404(app);
+}
+
+window.addEventListener('hashchange', navigate);
+window.addEventListener('DOMContentLoaded', () => {
+  renderHeader();
+  navigate();
+});
 </script>
-
 </body>
 </html>
